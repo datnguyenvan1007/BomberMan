@@ -17,8 +17,8 @@ public class BombSpawner : MonoBehaviour
     {
         GameObject bomb = Instantiate(bombPrefab);
         this.bombs.Add(bomb);
-        bomb.SetActive(false);
         bomb.transform.parent = transform;
+        bomb.SetActive(false);
     }
     public void Destroy(GameObject bomb)
     {
@@ -28,10 +28,10 @@ public class BombSpawner : MonoBehaviour
 
     public GameObject GetBombFromPool()
     {
-        foreach (GameObject b in bombs)
+        foreach (GameObject bomb in bombs)
         {
-            bombs.Remove(b);
-            return b;
+            bombs.Remove(bomb);
+            return bomb;
         }
         return null;
     }
@@ -40,7 +40,7 @@ public class BombSpawner : MonoBehaviour
         GameObject bomb = GetBombFromPool();
         if (bomb == null)
             return;
-        bomb.transform.parent = transform;
+        bomb.GetComponent<Collider2D>().isTrigger = true;
         bomb.transform.position = position;
         bomb.SetActive(true);
     }

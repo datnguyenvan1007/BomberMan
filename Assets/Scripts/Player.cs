@@ -5,54 +5,94 @@ using UnityEngine.AI;
 
 public class Player : MonoBehaviour
 {
-    [SerializeField] private float speed;
+    [SerializeField] private float timeDelay;
     private Animator animator;
-    private Collider2D coll;
+    private Rigidbody2D rig;
+    private bool isDead = false;
+    private float time = 0f;
     void Start()
     {
+        rig = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
-        coll = GetComponent<Collider2D>();
         BombSpawner.Instance.AddBomb();
     }
-    void FixedUpdate()
+    void Update()
     {
         Move();
         Bomb();
     }
-    void Move()
+    public void Move()
     {
-        float move_x = Input.GetAxisRaw("Horizontal");
-        transform.Translate(move_x * speed * Time.fixedDeltaTime, 0, 0);
-        if (move_x != 0 && !animator.isActiveAndEnabled)
+        if (isDead)
+            return;
+        float move_x = InputManager.Instance.GetAxisRaw("Horizontal");
+        float move_y = InputManager.Instance.GetAxisRaw("Vertical");
+        if (move_x != 0 && move_y == 0)
         {
-            animator.enabled = true;
+            time += Time.deltaTime;
+            if (!animator.isActiveAndEnabled)
+                animator.enabled = true;
+            if (move_x > 0)
+                animator.Play("GoRight");
+            else
+                animator.Play("GoLeft");
+            if (time >= timeDelay)
+            {
+                AudioManager.Instance.PlayAudioLeftRight();
+                time = 0f;
+            }
         }
-            animator.SetFloat("MoveX", move_x);
-
-        float move_y = Input.GetAxisRaw("Vertical");
-        transform.Translate(0, move_y * speed * Time.fixedDeltaTime, 0);
-        if (move_y != 0 && !animator.isActiveAndEnabled)
+        if (move_y != 0)
         {
-            animator.enabled = true;
+            time += Time.deltaTime;
+            if (!animator.isActiveAndEnabled)
+                animator.enabled = true;
+            if (move_y > 0)
+                animator.Play("GoBack");
+            else
+                animator.Play("GoAhead");
+            if (time >= timeDelay)
+            {
+                AudioManager.Instance.PlayAudioUpDown();
+                time = 0f;
+            }
         }
-            animator.SetFloat("MoveY", move_y);
-
-        if (move_x == 0f && move_y == 0f)
+        if (move_x == 0f && move_y == 0f && !isDead)
+        {
             animator.enabled = false;
+            time = timeDelay;
+        }
+        rig.velocity = new Vector2(move_x, move_y) * GameData.speed;
     }
-    void Bomb()
+    public void Bomb()
     {
-        if (Input.GetKey(KeyCode.Space))
+        if (InputManager.Instance.GetBomb())
         {
             Vector3 pos = new Vector3(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y), 0);
-            coll.isTrigger = true;
             BombSpawner.Instance.Spawn(pos);
+            AudioManager.Instance.PlayAudioPutBomb();
         }
     }
 
-    private void OnTriggerExit2D(Collider2D collision)
+    public void Destroy()
     {
-        if (collision.gameObject.CompareTag("Bomb"))
-            coll.isTrigger = false;
+        rig.velocity = Vector2.zero;
+        isDead = true;
+        animator.enabled = true;
+        animator.Play("Die");
+        Invoke("Disable", 1f);
+    }
+    private void Disable()
+    {
+        gameObject.SetActive(false);
+    }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.tag == "ExitGate")
+        {
+            transform.position = collision.transform.position;
+            animator.Play("Start");
+            AudioManager.Instance.PlayAudioLevelComplete();
+        }
     }
 }

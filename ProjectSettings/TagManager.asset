@@ -6,6 +6,9 @@ TagManager:
   tags:
   - Wall
   - Bomb
+  - Brick
+  - Enemy
+  - Explosion
   layers:
   - Default
   - TransparentFX
@@ -15,13 +18,13 @@ TagManager:
   - UI
   - 
   - 
-  - 
-  - 
+  - EnemyCanThrough
+  - Enemy
   - Wall
+  - Brick
   - 
   - 
-  - 
-  - 
+  - Bomb
   - 
   - 
   - 
