@@ -37,9 +37,12 @@ public class BombSpawner : MonoBehaviour
     }
     public void Spawn(Vector3 position)
     {
+        if (Physics2D.OverlapCircle(position, 0.1f, LayerMask.GetMask("Brick")))
+            return;
         GameObject bomb = GetBombFromPool();
         if (bomb == null)
             return;
+        AudioManager.Instance.PlayAudioPutBomb();
         bomb.GetComponent<Collider2D>().isTrigger = true;
         bomb.transform.position = position;
         bomb.SetActive(true);

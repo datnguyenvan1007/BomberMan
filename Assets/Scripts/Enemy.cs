@@ -17,7 +17,7 @@ public class Enemy : MonoBehaviour
     private Animator anim;
     [SerializeField] private List<Vector2> pathToPlayer = new List<Vector2>();
     private bool isMoving;
-    private Vector2 direction;
+    [SerializeField] private Vector2 direction;
     private Vector2 oldPosition;
 
     void Start()
@@ -29,12 +29,12 @@ public class Enemy : MonoBehaviour
         if (player != null && smart != 0)
         {
             pathFinder = GetComponent<PathFinder>();
-            if (smart == 1 && Vector2.Distance(transform.position, player.transform.position) <= 3f)
+            if (smart == 1 && Vector2.Distance(transform.position, player.transform.position) <= 2f)
             {
                 pathToPlayer = pathFinder.GetPath(player.transform.position, isThroughBrick);
                 ChangeDirectionForAI();
             }
-            if (smart == 2 && Vector2.Distance(transform.position, player.transform.position) <= 6f)
+            if (smart == 2 && Vector2.Distance(transform.position, player.transform.position) <= 5f)
             {
                 pathToPlayer = pathFinder.GetPath(player.transform.position, isThroughBrick);
                 ChangeDirectionForAI();
@@ -50,26 +50,15 @@ public class Enemy : MonoBehaviour
 
     void Update()
     {
-        if (smart == 2)
+        if (player.activeSelf)
         {
-            if (pathToPlayer.Count == 0 && Vector2.Distance(transform.position, player.transform.position) <= 6f)
-            {
-                pathToPlayer = pathFinder.GetPath(player.transform.position, isThroughBrick);
-                ChangeDirectionForAI();
-            }
-            if (Vector2.Distance(transform.position, player.transform.position) > 6f)
-                pathToPlayer.Clear();
+            ReadyAI();
         }
-        if (smart == 1)
+        else
         {
-            if (pathToPlayer.Count == 0 && Vector2.Distance(transform.position, player.transform.position) <= 3f)
-            {
-                pathToPlayer = pathFinder.GetPath(player.transform.position, isThroughBrick);
-                ChangeDirectionForAI();
-            }
-            if (Vector2.Distance(transform.position, player.transform.position) > 3f)
-                pathToPlayer.Clear();
+            pathToPlayer.Clear();
         }
+        
         if (smart == 0 || pathToPlayer.Count == 0)
         {
             Ready();
@@ -109,6 +98,29 @@ public class Enemy : MonoBehaviour
         {
             pathToPlayer = pathFinder.GetPath(player.transform.position, isThroughBrick);
             ChangeDirectionForAI();
+        }
+    }
+    void ReadyAI()
+    {
+        if (smart == 2)
+        {
+            if (pathToPlayer.Count == 0 && Vector2.Distance(transform.position, player.transform.position) <= 5f)
+            {
+                pathToPlayer = pathFinder.GetPath(player.transform.position, isThroughBrick);
+                ChangeDirectionForAI();
+            }
+            if (Vector2.Distance(transform.position, player.transform.position) > 5f)
+                pathToPlayer.Clear();
+        }
+        if (smart == 1)
+        {
+            if (pathToPlayer.Count == 0 && Vector2.Distance(transform.position, player.transform.position) <= 2f)
+            {
+                pathToPlayer = pathFinder.GetPath(player.transform.position, isThroughBrick);
+                ChangeDirectionForAI();
+            }
+            if (Vector2.Distance(transform.position, player.transform.position) > 2f)
+                pathToPlayer.Clear();
         }
     }
     void ChangeDirectionForAI()
@@ -191,13 +203,12 @@ public class Enemy : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         string tag = collision.gameObject.tag;
-        if (tag == "Bomb")
+        if (tag == "Bomb" || (tag == "Brick" && !isThroughBrick))
         {
             ChangeDirection(GetDirection());
         }
-        if (tag == "Player")
+        if (tag == "Player" && GameData.mystery == 0)
         {
-            collision.gameObject.GetComponent<Collider2D>().isTrigger = true;
             collision.gameObject.GetComponent<Player>().Destroy();
             return;
         }
@@ -225,9 +236,10 @@ public class Enemy : MonoBehaviour
 
     public void Destroy()
     {
+        gameObject.GetComponent<Collider2D>().enabled = false;
         rig.velocity = Vector2.zero;
         anim.Play("Die");
-        GameManager.Instance.SetGameScore(score);
+        UIManager.Instance.SetGameScore(score);
         StartCoroutine(PoolEnemy.Instance.Despawn(gameObject));
     }
 }

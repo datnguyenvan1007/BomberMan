@@ -19,8 +19,10 @@ public class DestroyExplosion : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         string tag = collision.gameObject.tag;
-        if (tag == "Player")
+        if (tag == "Player" && (GameData.flamePass == 0 || GameData.mystery == 0))
+        {
             collision.gameObject.GetComponent<Player>().Destroy();
+        }
         if (tag == "Enemy")
             collision.gameObject.GetComponent<Enemy>().Destroy();
     }

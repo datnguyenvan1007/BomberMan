@@ -5,11 +5,13 @@ using UnityEngine;
 public class PoolEnemy : MonoBehaviour
 {
     [SerializeField] private List<GameObject> enemies ;
+    public int enemyAlive;
 
     private static PoolEnemy instance;
     public static PoolEnemy Instance { get => instance; }
     void Awake()
     {
+        enemyAlive = transform.childCount;
         instance = this;
     }
     public IEnumerator Despawn(GameObject enemy)
@@ -17,6 +19,8 @@ public class PoolEnemy : MonoBehaviour
         yield return new WaitForSeconds(2f);
         this.enemies.Add(enemy);
         enemy.SetActive(false);
+        enemyAlive--;
+        
     }
     public void Spawn(GameObject enemyPrefab, Vector2 position)
     {
@@ -29,9 +33,11 @@ public class PoolEnemy : MonoBehaviour
         }
         else
         {
+            enemy.GetComponent<Collider2D>().enabled = true;
             enemy.transform.position = position;
             enemy.SetActive(true);
         }
+        enemyAlive++;
     }
     private GameObject GetEnemyByName(string name)
     {

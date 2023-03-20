@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class AudioManager : MonoBehaviour
 {
-    [SerializeField] private AudioClip titleScene;
-    [SerializeField] private AudioClip levelScene;
+    [SerializeField] private AudioClip titleScreen;
+    [SerializeField] private AudioClip levelStart;
     [SerializeField] private AudioClip inGame;
     [SerializeField] private AudioClip findTheExit;
     [SerializeField] private AudioClip levelComplete;
@@ -19,7 +19,7 @@ public class AudioManager : MonoBehaviour
     private AudioSource audioSource;
     private static AudioManager instance;
     public static AudioManager Instance { get => instance; }
-    private void Start()
+    private void Awake()
     {
         audioSource = GetComponent<AudioSource>();
         AudioManager.instance = this;
@@ -51,8 +51,27 @@ public class AudioManager : MonoBehaviour
     }
     public void PlayAudioLevelComplete()
     {
-        audioSource.clip = levelComplete;
-        audioSource.loop = false;
+        audioSource.PlayOneShot(levelComplete);
+    }
+    public void PlayAudioLevelStart()
+    {
+        audioSource.PlayOneShot(levelStart);
+    }
+    public void PlayAudioInGame()
+    {
+        audioSource.clip = inGame;
+        audioSource.Play();
+    }
+    public void Stop()
+    {
+        audioSource.Stop();
+    }
+    public void Pause()
+    {
+        audioSource.Pause();
+    }
+    public void Play()
+    {
         audioSource.Play();
     }
 }

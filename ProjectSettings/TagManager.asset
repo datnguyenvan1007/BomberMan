@@ -9,6 +9,8 @@ TagManager:
   - Brick
   - Enemy
   - Explosion
+  - ExitGate
+  - Items
   layers:
   - Default
   - TransparentFX
@@ -22,7 +24,7 @@ TagManager:
   - Enemy
   - Wall
   - Brick
-  - 
+  - Items
   - 
   - Bomb
   - 
