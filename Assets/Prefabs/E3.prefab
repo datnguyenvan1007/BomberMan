@@ -13,8 +13,6 @@ GameObject:
   - component: {fileID: 155105565451162067}
   - component: {fileID: 155105565451162066}
   - component: {fileID: 155105565451162065}
-  - component: {fileID: 1406465502}
-  - component: {fileID: 1406465507}
   m_Layer: 8
   m_Name: E3
   m_TagString: Enemy
@@ -119,11 +117,11 @@ CapsuleCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: -0.0035499341}
-  m_Size: {x: 0.42, y: 0.42953604}
+  m_Offset: {x: 0, y: 0}
+  m_Size: {x: 0.42, y: 0.429536}
   m_Direction: 0
 --- !u!114 &155105565451162065
 MonoBehaviour:
@@ -144,36 +142,6 @@ MonoBehaviour:
   smart: 1
   player: {fileID: 0}
   pathToPlayer: []
---- !u!50 &1406465502
-Rigidbody2D:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 155105565451162079}
-  m_BodyType: 0
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 0
-  m_Material: {fileID: 0}
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 4
---- !u!114 &1406465507
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 155105565451162079}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c09a8847831fbfd4e8a6a62c20479d7d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  isMoving: 0
+  direction: {x: 0, y: 0}
+  nextPosition: {x: 0, y: 0}

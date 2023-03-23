@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public static class GameData
 {
@@ -27,7 +28,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject timeOut;
     [SerializeField] private GameObject player;
     private GameObject currentLevel;
-    private float timeRemain = 200f;
+    private float timeRemain;
     private GameObject exitGate;
     private GameObject brickOverExitGate;
     private GameObject items;
@@ -41,19 +42,20 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get => instance; }
     private void Awake()
     {
+        Application.targetFrameRate = 60;
         GameManager.instance = this;
+        GetValueForGameData();
     }
 
     void Start()
     {
-        GetValueForGameData();
         for (int i = 1; i <= GameData.numberOfBombs; i++)
             BombSpawner.Instance.AddBomb();
-        UIManager.Instance.SetControllerOpacity(PlayerPrefs.GetFloat("ControllerOpacity") / 100);
-        //uiManager.SetAcitveControllerType(PlayerPrefs.GetInt("ControllerType"));
+        UIManager.Instance.SetControllerOpacity(PlayerPrefs.GetFloat("ControllerOpacity", 45) / 100);
+        UIManager.Instance.SetAcitveControllerType(PlayerPrefs.GetInt("ControllerType", 2));
         UIManager.Instance.SetTimeGame(timeRemain);
         UIManager.Instance.SetGameScore(0);
-        StartCoroutine(StartLevel());
+        StartCoroutine(LoadLevel());
     }
 
     void Update()
@@ -70,7 +72,7 @@ public class GameManager : MonoBehaviour
 
     void GetValueForGameData()
     {
-        GameData.speed = PlayerPrefs.GetFloat("Speed", 3f);
+        GameData.speed = PlayerPrefs.GetFloat("Speed", 3.5f);
         GameData.numberOfBombs = PlayerPrefs.GetInt("NumberOfBombs", 1);
         GameData.flame = PlayerPrefs.GetInt("Flame", 1);
         GameData.score = PlayerPrefs.GetInt("Score");
@@ -83,15 +85,25 @@ public class GameManager : MonoBehaviour
     {
         PlayerPrefs.SetInt("Score", GameData.score);
         PlayerPrefs.SetFloat("Speed", GameData.speed);
-        PlayerPrefs.SetInt("WallPass", GameData.wallPass);
-        PlayerPrefs.SetInt("NumberOfBombs", GameData.numberOfBombs);
-        PlayerPrefs.SetInt("FlamePass", GameData.flamePass);
         PlayerPrefs.SetInt("Flame", GameData.flame);
+        PlayerPrefs.SetInt("NumberOfBombs", GameData.numberOfBombs);
+        PlayerPrefs.SetInt("WallPass", GameData.wallPass);
+        PlayerPrefs.SetInt("FlamePass", GameData.flamePass);
+        PlayerPrefs.SetInt("BombPass", GameData.bombPass);
+    }
+    void SaveDataWhenLosing()
+    {
+        GameData.wallPass = 0;
+        GameData.flamePass = 0;
+        GameData.bombPass = 0;
+        PlayerPrefs.SetInt("WallPass", GameData.wallPass);
+        PlayerPrefs.SetInt("FlamePass", GameData.flamePass);
         PlayerPrefs.SetInt("BombPass", GameData.bombPass);
     }
 
-    IEnumerator StartLevel()
+    IEnumerator LoadLevel()
     {
+        TimeOut(false);
         player.SetActive(true);
         /*index = PlayerPrefs.GetInt("Left") + (PlayerPrefs.GetInt("Stage") - 1) * 4 - 1;*/
         index = PlayerPrefs.GetInt("Left", 2);
@@ -102,13 +114,15 @@ public class GameManager : MonoBehaviour
         if (index >= levelsPrefab.Count)
         {
             UIManager.Instance.ActiveWinScene();
+            DeleteAllData();
+            Invoke("RedirectHome", 2f);
             yield break;
         }
         UIManager.Instance.SetValueStageAndLeft(PlayerPrefs.GetInt("Stage", 1), PlayerPrefs.GetInt("Left", 2));
         UIManager.Instance.SetActiveStartingScene(true);
 
         AudioManager.Instance.PlayAudioLevelStart();
-        yield return new WaitForSeconds(4f);
+        yield return new WaitForSeconds(3.0f);
         UIManager.Instance.SetActiveStartingScene(false);
         if (index < levelsPrefab.Count)
             currentLevel = Instantiate(levelsPrefab[index], level.transform);
@@ -116,34 +130,44 @@ public class GameManager : MonoBehaviour
         UIManager.Instance.SetActivePlayingScene(true);
         AudioManager.Instance.PlayAudioInGame();
 
-        exitGate = GameObject.Find("ExitGate");
-        RaycastHit2D hit = Physics2D.Raycast(exitGate.transform.position, Vector3.forward);
-        brickOverExitGate = hit.collider.gameObject;
-        exitGate.SetActive(false);
-        isActivedExitGate = false;
-
-        GameObject itemsParent = GameObject.Find("Items");
-        if (itemsParent.transform.childCount > 0)
-        {
-            items = itemsParent.transform.GetChild(0).gameObject;
-            hit = Physics2D.Raycast(items.transform.position, Vector3.forward);
-            brickOverItems = hit.collider.gameObject;
-            items.SetActive(false);
-            isActivedItems = false;
-        }
+        HideExitGate();
+        HideItems();
 
         isPlayingLevel = true;
 
         timeRemain = 200;
     }
+    void HideExitGate()
+    {
+        exitGate = GameObject.Find("ExitGate");
+        RaycastHit2D hit = Physics2D.Raycast(exitGate.transform.position, Vector3.forward);
+        brickOverExitGate = hit.collider.gameObject;
+        exitGate.SetActive(false);
+        isActivedExitGate = false;
+    }
+    void HideItems()
+    {
+        GameObject itemsParent = GameObject.Find("Items");
+        if (itemsParent.transform.childCount > 0)
+        {
+            items = itemsParent.transform.GetChild(0).gameObject;
+            RaycastHit2D hit = Physics2D.Raycast(items.transform.position, Vector3.forward);
+            brickOverItems = hit.collider.gameObject;
+            items.SetActive(false);
+            isActivedItems = false;
+        }
+    }
     void SetTimeGame()
     {
         if (timeRemain <= 0)
             return;
-        if (timeRemain <= 0.1f)
+        if (timeRemain <= 0.1f && !timeOut.activeSelf)
         {
-            TimeOut();
+            if (Player.isCompleted)
+                return;
+            TimeOut(true);
             PoolEnemy.Instance.enemyAlive += 7;
+            return;
         }
         timeRemain -= Time.deltaTime;
         UIManager.Instance.SetTimeGame(timeRemain);
@@ -168,9 +192,9 @@ public class GameManager : MonoBehaviour
             isActivedItems = true;
         }
     }
-    private void TimeOut()
+    private void TimeOut(bool isActive)
     {
-        timeOut.SetActive(true);
+        timeOut.SetActive(isActive);
         foreach (Transform transform in timeOut.transform)
         {
             transform.gameObject.SetActive(true);
@@ -180,18 +204,20 @@ public class GameManager : MonoBehaviour
     {
         yield return new WaitForSeconds(2f);
         isPlayingLevel = false;
+        GameData.mystery = 0;
         SaveData();
         PlayerPrefs.SetInt("Left", PlayerPrefs.GetInt("Left", 2) + 1);
         PlayerPrefs.SetInt("Stage", PlayerPrefs.GetInt("Stage", 1) + 1);
         Destroy(currentLevel);
         player.SetActive(false);
-        StartCoroutine(StartLevel());
+        StartCoroutine(LoadLevel());
     }
     public void Lose()
     {
+        SaveDataWhenLosing();
         StartCoroutine(GoToPreviousLevel());
     }
-    private IEnumerator GoToPreviousLevel()
+    private IEnumerator GoToPreviousLevel() 
     {
         yield return new WaitForSeconds(2f);
         isPlayingLevel = false;
@@ -201,12 +227,30 @@ public class GameManager : MonoBehaviour
             Destroy(currentLevel);
             GetValueForGameData();
             UIManager.Instance.SetGameScore(0);
-            StartCoroutine(StartLevel());
+            StartCoroutine(LoadLevel());
         }
         else
         {
             UIManager.Instance.SetActivePlayingScene(false);
             UIManager.Instance.ActiveLoseScene();
+            DeleteAllData();
+            Invoke("RedirectHome", 2f);
         }
+    }
+    void DeleteAllData()
+    {
+        PlayerPrefs.DeleteKey("Score");
+        PlayerPrefs.DeleteKey("NumberOfBombs");
+        PlayerPrefs.DeleteKey("Flame");
+        PlayerPrefs.DeleteKey("WallPass");
+        PlayerPrefs.DeleteKey("BombPass");
+        PlayerPrefs.DeleteKey("FlamePass");
+        PlayerPrefs.DeleteKey("Speed");
+        PlayerPrefs.DeleteKey("Stage");
+        PlayerPrefs.DeleteKey("Left");
+    }
+    void RedirectHome()
+    {
+        SceneManager.LoadScene(0);
     }
 }

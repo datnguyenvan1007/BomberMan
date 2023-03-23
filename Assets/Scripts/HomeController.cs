@@ -58,11 +58,13 @@ public class HomeController : MonoBehaviour
         {
             soundOn.sprite = spritesOfSoundOn[1];
             soundOff.sprite = spritesOfSoundOff[0];
+            audioSource.mute = false;
         }
         else
         {
             soundOn.sprite = spritesOfSoundOn[0];
             soundOff.sprite = spritesOfSoundOff[1];
+            audioSource.mute = true;
         }
     }
     public void ChangeControllerOpacity()
@@ -102,7 +104,7 @@ public class HomeController : MonoBehaviour
         PlayerPrefs.SetInt("Sound", 1);
         soundOn.sprite = spritesOfSoundOn[1];
         soundOff.sprite = spritesOfSoundOff[0];
-        audioSource.Play();
+        audioSource.mute = false;
     }
     public void SelectSoundOff()
     {
@@ -111,7 +113,7 @@ public class HomeController : MonoBehaviour
         PlayerPrefs.SetInt("Sound", 0);
         soundOn.sprite = spritesOfSoundOn[0];
         soundOff.sprite = spritesOfSoundOff[1];
-        audioSource.Pause();
+        audioSource.mute = true;
     }
     public void OnPointerDownContinue()
     {
@@ -125,9 +127,6 @@ public class HomeController : MonoBehaviour
     public void OnPointerDownNewGame()
     {
         buttonNewGame.sprite = spritesOfButtonNewGame[1];
-    }
-    public void OnPointerUpNewGame()
-    {
         PlayerPrefs.DeleteKey("Score");
         PlayerPrefs.DeleteKey("NumberOfBombs");
         PlayerPrefs.DeleteKey("Flame");
@@ -137,6 +136,9 @@ public class HomeController : MonoBehaviour
         PlayerPrefs.DeleteKey("Speed");
         PlayerPrefs.DeleteKey("Stage");
         PlayerPrefs.DeleteKey("Left");
+    }
+    public void OnPointerUpNewGame()
+    {
         buttonNewGame.sprite = spritesOfButtonNewGame[0];
         SceneManager.LoadScene(1);
         

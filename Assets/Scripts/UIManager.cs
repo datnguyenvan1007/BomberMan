@@ -16,6 +16,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject loseScene;
     [SerializeField] private GameObject joystickControl;
     [SerializeField] private GameObject dpadControl;
+    [SerializeField] private RectTransform uiControlMovement;
+    [SerializeField] private RectTransform uiControlBomb;
     [SerializeField] private List<Image> controllers;
     [SerializeField] private Image soundOn;
     [SerializeField] private Image soundOff;
@@ -27,14 +29,15 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Image buttonMainMenu;
     [SerializeField] private Image buttonYesOfPromptPanel;
     [SerializeField] private Image buttonNoOfPromptPanel;
-    [SerializeField] private Sprite[] spritesOn;
-    [SerializeField] private Sprite[] spritesOff;
+    [SerializeField] private Sprite[] spritesOfButtonOn;
+    [SerializeField] private Sprite[] spritesOfButtonOff;
     [SerializeField] private Sprite[] spritesOfDpadSelection;
     [SerializeField] private Sprite[] spritesOfJoystickSelection;
     [SerializeField] private Sprite[] spritesOfButtonContinue;
     [SerializeField] private Sprite[] spritesOfButtonMainMenu;
     [SerializeField] private Sprite[] spritesOfButtonYes;
     [SerializeField] private Sprite[] spritesOfButtonNo;
+    private List<Vector2> controllersPosition = new List<Vector2>();
     private static UIManager instance;
     public static UIManager Instance { get => instance; }
     private void Awake()
@@ -43,7 +46,11 @@ public class UIManager : MonoBehaviour
     }
     private void Start()
     {
+        controllersPosition.Add(uiControlMovement.anchoredPosition);
+        controllersPosition.Add(uiControlBomb.anchoredPosition);
         SelectSound(PlayerPrefs.GetInt("Sound", 1));
+        SelectControllerType(PlayerPrefs.GetInt("ControllerType", 2));
+        SelectFlipControls(PlayerPrefs.GetInt("FlipControls", 0));
     }
     public void OnStartingLevel()
     {
@@ -115,17 +122,55 @@ public class UIManager : MonoBehaviour
     {
         if (mode == 1)
         {
-            soundOn.sprite = spritesOn[1];
-            soundOff.sprite = spritesOff[0];
-            AudioManager.Instance.Play();
+            soundOn.sprite = spritesOfButtonOn[1];
+            soundOff.sprite = spritesOfButtonOff[0];
+            AudioManager.Instance.UnMute();
             PlayerPrefs.SetInt("Sound", 1);
         }
         else
         {
-            soundOn.sprite = spritesOn[0];
-            soundOff.sprite = spritesOff[1];
-            AudioManager.Instance.Stop();
+            soundOn.sprite = spritesOfButtonOn[0];
+            soundOff.sprite = spritesOfButtonOff[1];
+            AudioManager.Instance.Mute();
             PlayerPrefs.SetInt("Sound", 0);
+        }
+    }
+    public void SelectControllerType(int mode)
+    {
+        if (mode == 1)
+        {
+            dpadSelection.sprite = spritesOfDpadSelection[0];
+            joystickSelection.sprite = spritesOfJoystickSelection[1];
+            PlayerPrefs.SetInt("ControllerType", 1);
+            joystickControl.SetActive(true);
+            dpadControl.SetActive(false);
+        }
+        else
+        {
+            dpadSelection.sprite = spritesOfDpadSelection[1];
+            joystickSelection.sprite = spritesOfJoystickSelection[0];
+            PlayerPrefs.SetInt("ControllerType", 2);
+            joystickControl.SetActive(false);
+            dpadControl.SetActive(true);
+        }
+    }
+    public void SelectFlipControls(int mode)
+    {
+        if (mode == 1)
+        {
+            flipOn.sprite = spritesOfButtonOn[1];
+            flipOff.sprite = spritesOfButtonOff[0];
+            PlayerPrefs.SetInt("FlipControls", 1);
+            uiControlMovement.anchoredPosition = controllersPosition[1];
+            uiControlBomb.anchoredPosition = controllersPosition[0];
+        }
+        else
+        {
+            flipOn.sprite = spritesOfButtonOn[0];
+            flipOff.sprite = spritesOfButtonOff[1];
+            PlayerPrefs.SetInt("FlipControls", 0);
+            uiControlMovement.anchoredPosition = controllersPosition[0];
+            uiControlBomb.anchoredPosition = controllersPosition[1];
         }
     }
     public void OnPointerDownContinue()
@@ -152,6 +197,7 @@ public class UIManager : MonoBehaviour
     public void OnPointerUpButtonYesOfPromptPanel()
     {
         buttonYesOfPromptPanel.sprite = spritesOfButtonYes[0];
+        Time.timeScale = 1;
         SceneManager.LoadScene(0);
     }
     public void OnPointerDownButtonNoOfPromptPanel()

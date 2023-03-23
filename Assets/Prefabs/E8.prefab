@@ -13,8 +13,6 @@ GameObject:
   - component: {fileID: 6219509067505225331}
   - component: {fileID: 6219509067505225335}
   - component: {fileID: 6219509067505225336}
-  - component: {fileID: 1461788715}
-  - component: {fileID: 1461788714}
   m_Layer: 9
   m_Name: E8
   m_TagString: Enemy
@@ -30,7 +28,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6219509067505225329}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.2328305, y: -0.04351914, z: 9.731299}
+  m_LocalPosition: {x: -1, y: 0, z: 0}
   m_LocalScale: {x: 2.1412182, y: 2.0936813, z: 2.3219843}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -128,6 +126,9 @@ MonoBehaviour:
   smart: 0
   player: {fileID: 0}
   pathToPlayer: []
+  isMoving: 0
+  direction: {x: 0, y: 0}
+  nextPosition: {x: 0, y: 0}
 --- !u!70 &6219509067505225336
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -138,42 +139,9 @@ CapsuleCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: -0.0035499341}
-  m_Size: {x: 0.42, y: 0.42953604}
+  m_Offset: {x: 0, y: 0}
+  m_Size: {x: 0.42, y: 0.429536}
   m_Direction: 0
---- !u!50 &1461788715
-Rigidbody2D:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6219509067505225329}
-  m_BodyType: 0
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 0
-  m_Material: {fileID: 0}
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 4
---- !u!114 &1461788714
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6219509067505225329}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c09a8847831fbfd4e8a6a62c20479d7d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

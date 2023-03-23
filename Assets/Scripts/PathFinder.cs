@@ -5,20 +5,24 @@ using UnityEngine;
 
 public class PathFinder : MonoBehaviour
 {
-    List<Vector2> PathToTarget;
-    List<Node> checkedNodes;
-    List<Node> waitingNodes;
+    static List<Vector2> pathToTarget;
+    static List<Node> checkedNodes;
+    static List<Node> waitingNodes;
+    static bool addStartingPosition = false;
 
-    public List<Vector2> GetPath(Vector2 target, bool isThroughBrick)
+    public static List<Vector2> GetPath(Vector2 start, Vector2 target, bool isThroughBrick)
     {
-        PathToTarget = new List<Vector2>();
+        pathToTarget = new List<Vector2>();
         checkedNodes = new List<Node>();
         waitingNodes = new List<Node>();
 
-        Vector2 startPosition = new Vector2(Mathf.Round(transform.position.x), Mathf.Round(transform.position.y));
+        Vector2 startPosition = new Vector2(Mathf.Round(start.x), Mathf.Round(start.y));
+        addStartingPosition = !startPosition.Equals(start);
         Vector2 targetPosition = new Vector2(Mathf.Round(target.x), Mathf.Round(target.y));
         if (startPosition == targetPosition)
-            return PathToTarget;
+            return pathToTarget;
+        if (!isThroughBrick && Physics2D.OverlapCircle(targetPosition, 0.1f, LayerMask.GetMask("Brick")))
+            return pathToTarget;
 
         Node startNode = new Node(0, startPosition, targetPosition, null);
         checkedNodes.Add(startNode);
@@ -56,9 +60,9 @@ public class PathFinder : MonoBehaviour
             }
         }
 
-        return PathToTarget;
+        return pathToTarget;
     }
-    public List<Vector2> CalculatePathFromNode(Node node)
+    public static List<Vector2> CalculatePathFromNode(Node node)
     {
         var path = new List<Vector2>();
         Node currentNode = node;
@@ -68,10 +72,12 @@ public class PathFinder : MonoBehaviour
             path.Add(currentNode.Position);
             currentNode = currentNode.PreviousNode;
         }
+        if (addStartingPosition)
+            path.Add(currentNode.Position);
 
         return path;
     }
-    List<Node> GetNeighbourNodes(Node node)
+    static List<Node> GetNeighbourNodes(Node node)
     {
         var neighbours = new List<Node>();
         neighbours.Add(new Node(node.G + 1, new Vector2(node.Position.x - 1, node.Position.y), node.TargetPosition, node));
@@ -90,8 +96,8 @@ public class PathFinder : MonoBehaviour
             Gizmos.color = Color.yellow;
             Gizmos.DrawSphere(new Vector2(item.Position.x, item.Position.y), 0.1f);
         }
-        if (PathToTarget != null)
-            foreach (var item in PathToTarget)
+        if (pathToTarget != null)
+            foreach (var item in pathToTarget)
             {
                 Gizmos.color = Color.red;
                 Gizmos.DrawSphere(new Vector2(item.x, item.y), 0.2f);

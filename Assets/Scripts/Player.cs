@@ -6,23 +6,20 @@ using UnityEngine.AI;
 public class Player : MonoBehaviour
 {
     [SerializeField] private float timeDelay;
-    [SerializeField] private GameObject cam;
     [SerializeField] private float minX;
     [SerializeField] private float maxX;
     [SerializeField] private float smoothTime;
-    private Vector3 velocity;
     private Animator animator;
     private Rigidbody2D rig;
     private Collider2D[] colliders;
-    public static bool isDead = false;
+    private bool isDead = false;
     public static bool isCompleted = false;
     private float time = 0f;
     private Vector2 startingPlayerPosition;
-    private Vector3 startingCameraPosition;
+    [SerializeField] private bool canPutBomb = true;
     private void Awake()
     {
         startingPlayerPosition = transform.position;
-        startingCameraPosition = cam.transform.position;
     }
     void Start()
     {
@@ -34,11 +31,6 @@ public class Player : MonoBehaviour
     {
         Move();
         Bomb();
-        if (transform.position.x < maxX && transform.position.x > minX)
-        {
-            Vector3 target = new Vector3(transform.position.x, cam.transform.position.y, cam.transform.position.z);
-            cam.transform.position = Vector3.SmoothDamp(cam.transform.position, target, ref velocity, smoothTime);
-        }
     }
     public void Move()
     {
@@ -81,21 +73,25 @@ public class Player : MonoBehaviour
             animator.enabled = false;
             time = timeDelay;
         }
-        rig.velocity = new Vector2(move_x, move_y) * GameData.speed;
+        /*rig.velocity = new Vector2(move_x, move_y) * GameData.speed;*/
+        rig.MovePosition((Vector2)transform.position + new Vector2(move_x, move_y) * GameData.speed * Time.deltaTime);
     }
     public void Bomb()
     {
         if (isCompleted)
             return;
-        if (InputManager.Instance.GetBomb())
+        if (InputManager.Instance.GetBomb() && canPutBomb)
         {
             Vector3 pos = new Vector3(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y), 0);
-            BombSpawner.Instance.Spawn(pos);
+            if (BombSpawner.Instance.Spawn(pos))
+                canPutBomb = false;
         }
     }
 
-    public void Destroy()
+    public void Die()
     {
+        if (isCompleted)
+            return;
         if (isDead)
             return;
         colliders[0].isTrigger = true;
@@ -117,23 +113,11 @@ public class Player : MonoBehaviour
         isCompleted = false;
         isDead = false;
         transform.position = startingPlayerPosition;
-        cam.transform.position = startingCameraPosition;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         string tag = collision.gameObject.tag;
-        if (tag == "ExitGate" && PoolEnemy.Instance.enemyAlive == 0)
-        {
-            if (isCompleted)
-                return;
-            isCompleted = true;
-            animator.Play("Start");
-            rig.velocity = Vector2.zero;
-            transform.position = collision.transform.position;
-            AudioManager.Instance.PlayAudioLevelComplete();
-            StartCoroutine(GameManager.Instance.WinLevel());
-        }
         if (GameData.bombPass == 1 && tag == "Bomb")
         {
             collision.GetComponent<Collider2D>().isTrigger = true;
@@ -148,6 +132,26 @@ public class Player : MonoBehaviour
             StartCoroutine(GetItems(collision));  
             AudioManager.Instance.PlayAudioFindTheItem();
         }
+        if (tag == "Enemy" && GameData.mystery == 0)
+        {
+            Die();
+        }
+    }
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        string tag = collision.gameObject.tag;
+        if (tag == "ExitGate" && PoolEnemy.Instance.enemyAlive == 0)
+        {
+            if (isCompleted)
+                return;
+            isCompleted = true;
+            animator.Play("Start");
+            rig.velocity = Vector2.zero;
+            AudioManager.Instance.Stop();
+            transform.position = collision.transform.position;
+            AudioManager.Instance.PlayAudioLevelComplete();
+            StartCoroutine(GameManager.Instance.WinLevel());
+        }
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
@@ -156,6 +160,10 @@ public class Player : MonoBehaviour
         {
             collision.GetComponent<Collider2D>().isTrigger = false;
         }
+        if (tag == "Bomb")
+        {
+            canPutBomb = true;
+        }
     }
     private IEnumerator GetItems(Collider2D collision)
     {
@@ -163,6 +171,7 @@ public class Player : MonoBehaviour
         {
             case "Bombs":
                 BombSpawner.Instance.AddBomb();
+                GameData.numberOfBombs++;
                 break;
             case "Flames":
                 GameData.flame++;
@@ -181,7 +190,7 @@ public class Player : MonoBehaviour
                 break;
             case "Mystery":
                 GameData.mystery = 1;
-                yield return new WaitForSeconds(5f);
+                yield return new WaitForSeconds(30f);
                 GameData.mystery = 0;
                 break;
         }

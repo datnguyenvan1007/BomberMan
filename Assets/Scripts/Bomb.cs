@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DestroyBomb : MonoBehaviour
+public class Bomb : MonoBehaviour
 {
     private void Update()
     {
@@ -17,10 +17,11 @@ public class DestroyBomb : MonoBehaviour
         yield return new WaitForSeconds(2f);
         BombSpawner.Instance.Destroy(gameObject);
         AudioManager.Instance.PlayAudioBoom();
-        Explosion.Instance.Explode(transform);
+        ExplosionSpawner.Instance.Explode(transform);
     }
-    private void OnTriggerExit2D(Collider2D collision)
+    /*private void OnTriggerExit2D(Collider2D collision)
     {
-        gameObject.GetComponent<Collider2D>().isTrigger = false;
-    }
+        if (collision.tag == "player")
+            gameObject.GetComponent<Collider2D>().isTrigger = false;
+    }*/
 }

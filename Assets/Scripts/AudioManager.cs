@@ -70,8 +70,12 @@ public class AudioManager : MonoBehaviour
     {
         audioSource.Pause();
     }
-    public void Play()
+    public void Mute()
     {
-        audioSource.Play();
+        audioSource.mute = true;
+    }
+    public void UnMute()
+    {
+        audioSource.mute = false;
     }
 }

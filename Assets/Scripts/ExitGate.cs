@@ -7,7 +7,7 @@ public class ExitGate : MonoBehaviour
     [SerializeField] private GameObject enemy;
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.tag == "Explosion")
+        if (collision.tag == "Explosion" && !Player.isCompleted)
         {
             StartCoroutine(SpawnEnemy());
         }

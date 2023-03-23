@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 3671887155530089894}
   - component: {fileID: 5800106408990434895}
   - component: {fileID: 3182281778526978661}
+  - component: {fileID: 3204466552627635247}
   m_Layer: 0
   m_Name: ExplosionBody
   m_TagString: Explosion
@@ -29,7 +30,7 @@ Transform:
   m_GameObject: {fileID: 3671887155530089892}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.012, y: 0.7103, z: 0}
-  m_LocalScale: {x: 1.9507782, y: 2.103537, z: 1.374068}
+  m_LocalScale: {x: 1.9507782, y: 2.1267707, z: 1.374068}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -89,7 +90,7 @@ SpriteRenderer:
   m_SpriteSortPoint: 0
 --- !u!95 &3671887155530089894
 Animator:
-  serializedVersion: 5
+  serializedVersion: 4
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -106,8 +107,7 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!114 &5800106408990434895
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -146,3 +146,24 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.3, y: 0.47363812}
   m_EdgeRadius: 0
+--- !u!50 &3204466552627635247
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3671887155530089892}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
