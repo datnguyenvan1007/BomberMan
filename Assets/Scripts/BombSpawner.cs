@@ -6,6 +6,7 @@ public class BombSpawner : MonoBehaviour
 {
     [SerializeField] private List<GameObject> bombs;
     [SerializeField] private GameObject bombPrefab;
+    private List<GameObject> waitingToExplode = new List<GameObject>();
     private static BombSpawner instance;
     public static BombSpawner Instance { get => instance; }
 
@@ -42,10 +43,22 @@ public class BombSpawner : MonoBehaviour
         GameObject bomb = GetBombFromPool();
         if (bomb == null)
             return false;
+        if (GameData.detonator == 1)
+        {
+            waitingToExplode.Add(bomb);
+        }
         AudioManager.Instance.PlayAudioPutBomb();
         bomb.GetComponent<Collider2D>().isTrigger = true;
         bomb.transform.position = position;
         bomb.SetActive(true);
         return true;
+    }
+    public void Detonate()
+    {
+        if (waitingToExplode.Count > 0)
+        {
+            waitingToExplode[0].GetComponent<Bomb>().Explode();
+            waitingToExplode.RemoveAt(0);
+        }
     }
 }

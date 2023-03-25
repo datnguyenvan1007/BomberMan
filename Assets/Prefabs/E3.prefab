@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 155105565451162069}
   - component: {fileID: 155105565451162067}
   - component: {fileID: 155105565451162066}
-  - component: {fileID: 155105565451162065}
+  - component: {fileID: 1352648955746798757}
   m_Layer: 8
   m_Name: E3
   m_TagString: Enemy
@@ -123,7 +123,7 @@ CapsuleCollider2D:
   m_Offset: {x: 0, y: 0}
   m_Size: {x: 0.42, y: 0.429536}
   m_Direction: 0
---- !u!114 &155105565451162065
+--- !u!114 &1352648955746798757
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -132,16 +132,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 155105565451162079}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a9c6b453e0a50df428abda7920585273, type: 3}
+  m_Script: {fileID: 11500000, guid: e19dc87b81df1354daf849d648d79a02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 1.5
   score: 2000
   isThroughBrick: 1
-  limitDistance: 0
   smart: 1
-  player: {fileID: 0}
-  pathToPlayer: []
-  isMoving: 0
-  direction: {x: 0, y: 0}
-  nextPosition: {x: 0, y: 0}

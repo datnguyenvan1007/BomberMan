@@ -4,92 +4,62 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    [SerializeField] private float speed;
-    [SerializeField] private int score;
-    [SerializeField] private bool isThroughBrick = false;
-    [Range(0, 2)]
-    [SerializeField] private int smart = 0;
-    private int limitDistance = 0;
-    private GameObject player;
-    private float limitedDistanceCanFindPlayer;
-    private Animator anim;
-    private new Collider2D collider;
-    private List<Vector2> pathToPlayer = new List<Vector2>();
-    private bool isMoving = false;
-    private bool isDead = false;
-    private bool hasJustSwitchedToNormal = false;
-    private Vector2 direction;
-    private Vector2 oldPosition;
-    private Vector2 nextPosition;
+    [SerializeField] protected float speed;
+    [SerializeField] protected int score;
+    [SerializeField] protected bool isThroughBrick = false;
+    protected int limitedDistance = 0;
+    protected GameObject player;
+    protected Animator anim;
+    protected new Collider2D collider;
+    protected bool isDead = false;
+    protected Vector2 direction;
+    protected Vector2 oldPosition;
+    protected Vector2 nextPosition;
 
-    void Start()
+    private static Enemy instance;
+    public static Enemy Instance { get => instance; }
+
+    protected virtual void Start()
     {
+        Enemy.instance = this;
         player = GameObject.Find("Player");
-        nextPosition = transform.position;
-        direction = Vector2.zero;
         anim = GetComponent<Animator>();
         collider = gameObject.GetComponent<Collider2D>();
-        if (smart != 0)
-        {
-            limitedDistanceCanFindPlayer = smart == 2 ? 6f : 2.5f;
-            if (Vector2.Distance(transform.position, player.transform.position) <= limitedDistanceCanFindPlayer)
-            {
-                pathToPlayer = PathFinder.GetPath(transform.position, player.transform.position, isThroughBrick);
-            }
-            if (pathToPlayer.Count > 0)
-                isMoving = true;
-        }
-        if (smart == 0 || !isMoving)
-        {
-            direction = GetDirection();
-            oldPosition = transform.position;
-        }
+        direction = Vector2.zero;
+        nextPosition = transform.position;
+        oldPosition = transform.position;
+
+        direction = GetDirection();
     }
 
-    void Update()
+    protected virtual void Update()
     {
         if (isDead)
             return;
-        if (player.activeSelf && smart != 0)
-        {
-            ReadyAI();
-        }
-        
-        if (smart == 0 || pathToPlayer.Count == 0)
-        {
-            if (hasJustSwitchedToNormal)
-            {
-                direction = GetDirection();
-                hasJustSwitchedToNormal = false;
-            }
-            Ready();
-            ChangeDirectionByDistance();
-        }
-        else
-        {
-            AI();
-        }
+        Ready();
+        ChangeDirectionByDistance();
     }
 
-    void Ready()
+    protected void Ready()
     {
         if (direction != Vector2.zero)
             return;
         direction = GetDirection();
     }
-    void ChangeDirectionByDistance()
+    protected void ChangeDirectionByDistance()
     {
-        if (Vector2.Distance(oldPosition, transform.position) >= limitDistance)
+        if (Vector2.Distance(oldPosition, transform.position) >= limitedDistance)
         {
             direction = GetDirection();
         }
         Move();
     }
-    Vector2 GetDirection()
+    protected Vector2 GetDirection()
     {
-        nextPosition = new Vector2(Mathf.Round(transform.position.x), Mathf.Round(transform.position.y));
-        oldPosition = new Vector2(Mathf.Round(transform.position.x), Mathf.Round(transform.position.y));
-        limitDistance = Random.Range(1, 6);
+        Vector2 pos = new Vector2(Mathf.Round(transform.position.x), Mathf.Round(transform.position.y));
+        nextPosition = pos;
+        oldPosition = pos;
+        limitedDistance = Random.Range(1, 6);
         string[] layerMask;
         if (!isThroughBrick)
             layerMask = new string[] {"Wall", "Brick", "Bomb"};
@@ -97,7 +67,6 @@ public class Enemy : MonoBehaviour
         {
             layerMask = new string[] { "Wall", "Bomb"};
         }
-        Vector2 pos = new Vector2(Mathf.Round(transform.position.x), Mathf.Round(transform.position.y));
         List<Vector2> directions = new List<Vector2>();
         if (!Physics2D.OverlapCircle(pos + Vector2.up, 0.1f, LayerMask.GetMask(layerMask)))
         {
@@ -124,7 +93,7 @@ public class Enemy : MonoBehaviour
         }
         return Vector2.zero;
     }
-    void Move()
+    protected void Move()
     {
         if (isDead)
             return;
@@ -148,51 +117,14 @@ public class Enemy : MonoBehaviour
         }
         transform.position = Vector2.MoveTowards(transform.position, nextPosition, speed * Time.deltaTime);
     }
-    void AI()
+    public void ReverseDirection()
     {
-        if (!player.activeSelf)
-            return;
-        if (isMoving)
-        {
-            if (Vector2.Distance(transform.position, pathToPlayer[pathToPlayer.Count - 1]) > 0.0f)
-            {
-                transform.position = Vector2.MoveTowards(transform.position, pathToPlayer[pathToPlayer.Count - 1], speed * Time.deltaTime);
-                Vector2 dir = pathToPlayer[pathToPlayer.Count - 1] - new Vector2(Mathf.Round(transform.position.x), Mathf.Round(transform.position.y));
-                dir.Normalize();
-                SetAnimationOfMovement(dir);
-                direction = dir;
-                isMoving = true;
-            }
-            else
-            {
-                isMoving = false;
-            }
-        }
-        else
-        {
-            pathToPlayer = PathFinder.GetPath(transform.position, player.transform.position, isThroughBrick);
-            isMoving = true;
-        }
+        direction = -1 * direction;
+        /*nextPosition += direction;
+        oldPosition = nextPosition;*/
     }
-    void ReadyAI()
-    {
-        if (pathToPlayer.Count == 0 && Vector2.Distance(transform.position, player.transform.position) <= limitedDistanceCanFindPlayer)
-        {
-            pathToPlayer = PathFinder.GetPath(transform.position, player.transform.position, isThroughBrick);
-            if (pathToPlayer.Count > 0)
-                isMoving = true;
-        }
-        if (Vector2.Distance(transform.position, player.transform.position) > limitedDistanceCanFindPlayer)
-        {
-            if (isMoving)
-            {
-                hasJustSwitchedToNormal = true;
-            }
-            pathToPlayer.Clear();
-            isMoving = false;
-        }
-    }
-    void SetAnimationOfMovement(Vector2 dir)
+    
+    protected void SetAnimationOfMovement(Vector2 dir)
     {
         if (dir == direction)
             return;
@@ -213,12 +145,12 @@ public class Enemy : MonoBehaviour
         StartCoroutine(PoolEnemy.Instance.Despawn(gameObject));
     }
 
-    private void OnEnable()
+    protected void OnEnable()
     {
         direction = Vector2.zero;
         isDead = false;
     }
-    private void OnDisable()
+    protected void OnDisable()
     {
         collider.enabled = true;
     }

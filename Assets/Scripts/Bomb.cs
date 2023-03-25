@@ -6,22 +6,20 @@ public class Bomb : MonoBehaviour
 {
     private void Update()
     {
-        if (gameObject.activeSelf)
+        if (gameObject.activeSelf && GameData.detonator == 0)
         {
             StartCoroutine(DestroyByTime());
         }
     }
     private IEnumerator DestroyByTime()
     {
-        /*gameObject.GetComponent<Collider2D>().isTrigger = true;*/
         yield return new WaitForSeconds(2f);
+        Explode();
+    }
+    public void Explode()
+    {
         BombSpawner.Instance.Destroy(gameObject);
         AudioManager.Instance.PlayAudioBoom();
         ExplosionSpawner.Instance.Explode(transform);
     }
-    /*private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.tag == "player")
-            gameObject.GetComponent<Collider2D>().isTrigger = false;
-    }*/
 }

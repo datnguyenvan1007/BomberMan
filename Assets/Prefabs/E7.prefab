@@ -135,13 +135,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9c6b453e0a50df428abda7920585273, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 1.5
+  speed: 2.5
   score: 200
   isThroughBrick: 0
-  limitDistance: 0
-  smart: 0
-  player: {fileID: 0}
-  pathToPlayer: []
-  isMoving: 0
-  direction: {x: 0, y: 0}
-  nextPosition: {x: 0, y: 0}

@@ -13,13 +13,8 @@ public static class GameData
     public static int wallPass;
     public static int bombPass;
     public static int flamePass;
+    public static int detonator;
     public static int mystery = 0;
-    /*public static int left = 2;
-    public static int stage = 1;*/
-    /*public static float controllerOpacity = 45;
-    public static int controllerType = 2;
-    public static bool isFlipControls = false;
-    public static bool isSound = true;*/
 }
 public class GameManager : MonoBehaviour
 {
@@ -75,10 +70,11 @@ public class GameManager : MonoBehaviour
         GameData.speed = PlayerPrefs.GetFloat("Speed", 3.5f);
         GameData.numberOfBombs = PlayerPrefs.GetInt("NumberOfBombs", 1);
         GameData.flame = PlayerPrefs.GetInt("Flame", 1);
-        GameData.score = PlayerPrefs.GetInt("Score");
-        GameData.wallPass = PlayerPrefs.GetInt("WallPass");
-        GameData.flamePass = PlayerPrefs.GetInt("FlamePass");
-        GameData.bombPass = PlayerPrefs.GetInt("BombPass");
+        GameData.score = PlayerPrefs.GetInt("Score", 0);
+        GameData.wallPass = PlayerPrefs.GetInt("WallPass", 0);
+        GameData.flamePass = PlayerPrefs.GetInt("FlamePass", 0);
+        GameData.bombPass = PlayerPrefs.GetInt("BombPass", 0);
+        GameData.detonator = PlayerPrefs.GetInt("Detonator", 0);
     }
 
     void SaveData()
@@ -90,6 +86,7 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.SetInt("WallPass", GameData.wallPass);
         PlayerPrefs.SetInt("FlamePass", GameData.flamePass);
         PlayerPrefs.SetInt("BombPass", GameData.bombPass);
+        PlayerPrefs.SetInt("Detonator", GameData.detonator);
     }
     void SaveDataWhenLosing()
     {
@@ -127,6 +124,7 @@ public class GameManager : MonoBehaviour
         if (index < levelsPrefab.Count)
             currentLevel = Instantiate(levelsPrefab[index], level.transform);
 
+
         UIManager.Instance.SetActivePlayingScene(true);
         AudioManager.Instance.PlayAudioInGame();
 
@@ -140,7 +138,7 @@ public class GameManager : MonoBehaviour
     void HideExitGate()
     {
         exitGate = GameObject.Find("ExitGate");
-        RaycastHit2D hit = Physics2D.Raycast(exitGate.transform.position, Vector3.forward);
+        RaycastHit2D hit = Physics2D.Raycast(exitGate.transform.position, Vector3.forward, 0.5f, LayerMask.GetMask("Brick"));
         brickOverExitGate = hit.collider.gameObject;
         exitGate.SetActive(false);
         isActivedExitGate = false;
@@ -151,7 +149,7 @@ public class GameManager : MonoBehaviour
         if (itemsParent.transform.childCount > 0)
         {
             items = itemsParent.transform.GetChild(0).gameObject;
-            RaycastHit2D hit = Physics2D.Raycast(items.transform.position, Vector3.forward);
+            RaycastHit2D hit = Physics2D.Raycast(items.transform.position, Vector3.forward, 0.5f, LayerMask.GetMask("Brick"));
             brickOverItems = hit.collider.gameObject;
             items.SetActive(false);
             isActivedItems = false;

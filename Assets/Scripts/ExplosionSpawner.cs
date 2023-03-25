@@ -70,6 +70,7 @@ public class ExplosionSpawner : MonoBehaviour
             if (hit.collider.tag == "Bomb")
             {
                 count = Mathf.RoundToInt(hit.distance);
+                Debug.Log(count);
                 if (count < GameData.flame)
                 {
                     isSmallerRange = true;

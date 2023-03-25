@@ -10,15 +10,12 @@ public class InputManager : MonoBehaviour
     [SerializeField] private GameObject DPad;
     [SerializeField] private GameObject joystick;
     [SerializeField] private GameObject uiControlBomb;
-    [SerializeField] private Button btnToUp;
-    [SerializeField] private Button btnToDown;
-    [SerializeField] private Button btnToLeft;
-    [SerializeField] private Button btnToRight;
-    [SerializeField] private Button btnBomb;
+    [SerializeField] private GameObject buttonExplode;
     private Joystick joy;
     private float moveX = 0;
     private float moveY = 0;
     private bool isPressedBomb = false;
+    private bool isPressedExplode = false;
 
     private void Start()
     {
@@ -65,9 +62,19 @@ public class InputManager : MonoBehaviour
             return isPressedBomb;
         return Input.GetKeyDown(KeyCode.Space);
     }
+    public bool GetDetonator()
+    {
+        if (buttonExplode.activeSelf)
+            return isPressedExplode;
+        return Input.GetKeyDown(KeyCode.F);
+    }
     public void Bomb(bool value)
     {
         isPressedBomb = value;
+    }
+    public void Detonate(bool value)
+    {
+        isPressedExplode = value;
     }
     public void SetValueMoveX(float value)
     {

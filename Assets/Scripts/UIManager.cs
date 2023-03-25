@@ -16,6 +16,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject loseScene;
     [SerializeField] private GameObject joystickControl;
     [SerializeField] private GameObject dpadControl;
+    [SerializeField] private GameObject buttonExplode;
     [SerializeField] private RectTransform uiControlMovement;
     [SerializeField] private RectTransform uiControlBomb;
     [SerializeField] private List<Image> controllers;
@@ -113,6 +114,11 @@ public class UIManager : MonoBehaviour
     public void ActiveLoseScene()
     {
         loseScene.SetActive(true);
+    }
+    public void AcitveButtonExplode()
+    {
+        if (uiControlBomb.gameObject.activeSelf)
+            buttonExplode.SetActive(true);
     }
     public void Pause()
     {
