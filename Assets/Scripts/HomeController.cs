@@ -14,6 +14,8 @@ public class HomeController : MonoBehaviour
     [SerializeField] private Image buttonNewGame;
     [SerializeField] private Image buttonSettings;
     [SerializeField] private Image buttonExit;
+    [SerializeField] private Image buttonYes;
+    [SerializeField] private Image buttonNo;
     [SerializeField] private Slider controllerOpacitySlider;
     [SerializeField] private Text controlerOpacityPercent;
     [SerializeField] private Image controllerTypeJoystick;
@@ -26,6 +28,8 @@ public class HomeController : MonoBehaviour
     [SerializeField] private Sprite[] spritesOfFlipControl;
     [SerializeField] private Sprite[] spritesOfSoundOn;
     [SerializeField] private Sprite[] spritesOfSoundOff;
+    [SerializeField] private Sprite[] spritesOfButtonYes;
+    [SerializeField] private Sprite[] spritesOfButtonNo;
     private AudioSource audioSource;
     void Start()
     {
@@ -127,6 +131,14 @@ public class HomeController : MonoBehaviour
     public void OnPointerDownNewGame()
     {
         buttonNewGame.sprite = spritesOfButtonNewGame[1];
+    }
+    public void OnPointerUpNewGame()
+    {
+        buttonNewGame.sprite = spritesOfButtonNewGame[0];
+    }
+    public void OnPointerDownButtonYes()
+    {
+        buttonYes.sprite = spritesOfButtonYes[1];
         PlayerPrefs.DeleteKey("Score");
         PlayerPrefs.DeleteKey("NumberOfBombs");
         PlayerPrefs.DeleteKey("Flame");
@@ -136,12 +148,20 @@ public class HomeController : MonoBehaviour
         PlayerPrefs.DeleteKey("Speed");
         PlayerPrefs.DeleteKey("Stage");
         PlayerPrefs.DeleteKey("Left");
+        PlayerPrefs.DeleteKey("Detonator");
     }
-    public void OnPointerUpNewGame()
+    public void OnPointerUpButtonYes()
     {
-        buttonNewGame.sprite = spritesOfButtonNewGame[0];
+        buttonYes.sprite = spritesOfButtonYes[0];
         SceneManager.LoadScene(1);
-        
+    }
+    public void OnPointerDownButtonNo()
+    {
+        buttonNo.sprite = spritesOfButtonNo[1];
+    }
+    public void OnPointerUpButtonNo()
+    {
+        buttonNo.sprite = spritesOfButtonNo[0];
     }
     public void OnPointerDownSettings()
     {

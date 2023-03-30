@@ -15,15 +15,6 @@ public class Brick : MonoBehaviour
             collider.isTrigger = true;
         }
     }
-    private void Update()
-    {
-        if (collider.isTrigger)
-            return;
-        if (GameData.wallPass == 1)
-        {
-            collider.isTrigger = true;
-        }
-    }
     public void Destroy()
     {
         anim.Play("Broken");

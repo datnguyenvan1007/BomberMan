@@ -85,6 +85,20 @@ public class UIManager : MonoBehaviour
             joystickControl.SetActive(false);
         }
     }
+    public void SetActiveButtonDetonator(int type)
+    {
+        if (uiControlBomb.gameObject.activeSelf)
+        {
+            if (type == 1)
+            {
+                buttonExplode.SetActive(true);
+            }
+            else
+            {
+                buttonExplode.SetActive(false);
+            }
+        }
+    }
     public void SetGameScore(int s)
     {
         GameData.score += s;
@@ -114,11 +128,6 @@ public class UIManager : MonoBehaviour
     public void ActiveLoseScene()
     {
         loseScene.SetActive(true);
-    }
-    public void AcitveButtonExplode()
-    {
-        if (uiControlBomb.gameObject.activeSelf)
-            buttonExplode.SetActive(true);
     }
     public void Pause()
     {

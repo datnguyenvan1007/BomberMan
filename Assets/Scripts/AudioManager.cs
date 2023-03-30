@@ -9,9 +9,9 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioClip inGame;
     [SerializeField] private AudioClip findTheExit;
     [SerializeField] private AudioClip levelComplete;
-    [SerializeField] private AudioClip bonusStage;
+    // [SerializeField] private AudioClip bonusStage;
     [SerializeField] private AudioClip boom;
-    [SerializeField] private AudioClip dying;
+    // [SerializeField] private AudioClip dying;
     [SerializeField] private AudioClip justDied;
     [SerializeField] private AudioClip leftRight;
     [SerializeField] private AudioClip putBomb;
