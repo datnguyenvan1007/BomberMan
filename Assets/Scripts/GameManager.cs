@@ -297,6 +297,7 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.DeleteKey("Speed");
         PlayerPrefs.DeleteKey("Stage");
         PlayerPrefs.DeleteKey("Left");
+        PlayerPrefs.DeleteKey("Detonator");
     }
     void RedirectHome()
     {

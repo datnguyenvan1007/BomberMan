@@ -28,4 +28,14 @@ public class Brick : MonoBehaviour
     {
         collider.isTrigger = isTrigger;
     }
+    private void OnTriggerEnter2D(Collider2D other) {
+        if (other.tag == "Explosion") {
+            Collider2D col = Physics2D.OverlapCircle(transform.position, 0.4f, LayerMask.GetMask("EnemyCanThrough"));
+            if (col)
+            {
+                col.gameObject.GetComponent<Enemy>().Die();
+            }
+            Destroy();
+        }
+    }
 }

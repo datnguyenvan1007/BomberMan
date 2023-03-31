@@ -45,41 +45,12 @@ public class ExplosionSpawner : MonoBehaviour
         bool isSmallerRange = false;
         Vector2 pos = trans.position;
         int count = GameData.flame;
-        RaycastHit2D[] hits = Physics2D.RaycastAll(trans.position, direction, GameData.flame);
-        foreach (RaycastHit2D hit in hits)
-        {
-            if (hit.collider.CompareTag("Wall"))
+        RaycastHit2D hit = Physics2D.Raycast(pos, direction, count, LayerMask.GetMask("Bomb", "Wall", "Brick"));
+        if (hit.collider) {
+            count = Mathf.RoundToInt(hit.distance);
+            if (count < GameData.flame)
             {
-                count = Mathf.RoundToInt(hit.distance);
-                if (count < GameData.flame)
-                {
-                    isSmallerRange = true;
-                }
-                break;
-            }
-            if (hit.collider.CompareTag("Brick"))
-            {
-                count = Mathf.RoundToInt(hit.distance);
-                if (count < GameData.flame)
-                {
-                    isSmallerRange = true;
-                }
-                Collider2D col = Physics2D.OverlapCircle(hit.transform.position, 0.4f, LayerMask.GetMask("EnemyCanThrough"));
-                hit.collider.GetComponent<Brick>().Destroy();
-                if (col)
-                {
-                    col.gameObject.GetComponent<Enemy>().Die();
-                }
-                break;
-            }
-            if (hit.collider.tag == "Bomb")
-            {
-                count = Mathf.RoundToInt(hit.distance);
-                if (count < GameData.flame)
-                {
-                    isSmallerRange = true;
-                }
-                break;
+                isSmallerRange = true;
             }
         }
         while (count > 1)

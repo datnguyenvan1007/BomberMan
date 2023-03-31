@@ -105,7 +105,7 @@ TextureImporter:
     buildTarget: Android
     maxTextureSize: 2048
     resizeAlgorithm: 0
-    textureFormat: 29
+    textureFormat: 65
     textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
@@ -3530,9 +3530,9 @@ TextureImporter:
     secondaryTextures: []
     nameFileIdTable:
       e4_5: -1661192584
-      e4_3: -111860234
-      Progress will be lost.: -47239999
-      btn_hoystick1: -1625040777
+      no1_2: 1147083777
+      e7_2: 994131149
+      e3_0: -1604883784
       item_2: -1698078381
       e2_6: 1964158903
       Are you sure _: 1616438200
@@ -3561,9 +3561,9 @@ TextureImporter:
       nhanvat1_9: -1735702843
       e3_2: -867281535
       e3_1: 1020105484
-      e7_2: 994131149
-      e5_4: 1378066321
+      nhanvat1_18: 1963301586
       nhanvat1_13: 1858129268
+      e5_4: 1378066321
       e5_1: -301499795
       e5_6: 1493655594
       item_5: -419397704
@@ -3607,8 +3607,8 @@ TextureImporter:
       btn_dpad4: 169422591
       btn_on2: -1882664670
       e6_2: -1987629829
-      no3_0: -2026313887
       e3_5: 2102243132
+      no3_0: -2026313887
       e5_3: -1428280546
       btn_setting2: 392524077
       btn_yes1: 454848458
@@ -3678,19 +3678,19 @@ TextureImporter:
       btn_continue1 #1095: -1825082030
       item_0: 395365241
       btn_yes2 #1091: 188041807
-      e2_3: 1246921252
+      btn_flipcontroller3: -784422523
+      e4_3: -111860234
+      item_1: -638943735
+      e1_0: 69916653
       e1_1: 657044150
       e8_2: -1186185104
-      no1_2: 1147083777
-      e6_3: 1105572865
       e1_5: -815191674
-      nhanvat1_18: 1963301586
-      e3_0: -1604883784
       e7_7: -2064336002
-      e1_0: 69916653
-      btn_flipcontroller3: -784422523
+      e6_3: 1105572865
+      Progress will be lost.: -47239999
+      btn_hoystick1: -1625040777
       btn_back2: -1096442369
-      item_1: -638943735
+      e2_3: 1246921252
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

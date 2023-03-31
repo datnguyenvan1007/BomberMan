@@ -27,10 +27,14 @@ public class SmartEnemy : Enemy
             if (hasJustSwitchedToNormal)
             {
                 nextPosition = new Vector2(Mathf.Round(transform.position.x), Mathf.Round(transform.position.y));
-                oldPosition = nextPosition;
+                //oldPosition = nextPosition;
+                Vector2 dir = nextPosition - (Vector2)transform.position;
+                dir.Normalize();
+                SetAnimationOfMovement(dir);
                 hasJustSwitchedToNormal = false;
             }
-            ChangeDirectionByDistance();
+            // ChangeDirectionByDistance();
+            Move();
         }
     }
     void AI()

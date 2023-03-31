@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PoolEnemy : MonoBehaviour
 {
-    [SerializeField] private List<GameObject> enemies ;
+    [SerializeField] private List<GameObject> enemies = null ;
     public int enemyAlive;
 
     private static PoolEnemy instance;
@@ -12,6 +12,7 @@ public class PoolEnemy : MonoBehaviour
     void Awake()
     {
         enemyAlive = transform.childCount;
+        enemies = new List<GameObject>();
         instance = this;
     }
     public IEnumerator Despawn(GameObject enemy)

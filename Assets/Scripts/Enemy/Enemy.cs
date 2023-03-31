@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -15,14 +14,17 @@ public class Enemy : MonoBehaviour
     protected Vector2 direction;
     protected Vector2 oldPosition;
     protected Vector2 nextPosition;
+    protected List<int> distanceCanWalk = new List<int>();
+    private RaycastHit2D hit;
     List<Vector2> directions = new List<Vector2>();
+    private int GoLeftHash = Animator.StringToHash("GoLeft");
+    private int GoRightHash = Animator.StringToHash("GoRight");
 
     protected virtual void Start()
     {
         player = GameObject.Find("Player");
         anim = GetComponent<Animator>();
         collider = gameObject.GetComponent<Collider2D>();
-        direction = Vector2.zero;
         nextPosition = transform.position;
         oldPosition = transform.position;
     }
@@ -31,84 +33,64 @@ public class Enemy : MonoBehaviour
     {
         if (isDead)
             return;
-        /*Ready();*/
-        ChangeDirectionByDistance();
-    }
-
-    /*protected void Ready()
-    {
-        if (direction != Vector2.zero)
-            return;
-        direction = GetDirection();
-    }*/
-    protected void ChangeDirectionByDistance()
-    {
-        if (Vector2.Distance(oldPosition, transform.position) >= limitedDistance)
-        {
-            direction = GetDirection();
-        }
         Move();
     }
-    protected Vector2 GetDirection()
+    protected Vector2 GetNextPosition()
     {
-        Vector2 pos = new Vector2(Mathf.Round(transform.position.x), Mathf.Round(transform.position.y));
-        nextPosition = pos;
-        oldPosition = pos;
+        oldPosition = new Vector2(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y));
+        //oldPosition = transform.position;
+        nextPosition = oldPosition;
         limitedDistance = Random.Range(1, 6);
         string[] layerMask;
         if (!isThroughBrick)
-            layerMask = new string[] {"Wall", "Brick", "Bomb"};
+            layerMask = new string[] { "Wall", "Brick", "Bomb" };
         else
         {
-            layerMask = new string[] { "Wall", "Bomb"};
+            layerMask = new string[] { "Wall", "Bomb" };
         }
         directions.Clear();
-        if (!Physics2D.OverlapCircle(pos + Vector2.up, 0.1f, LayerMask.GetMask(layerMask)))
-        {
-            directions.Add(Vector2.up);
-        }
-        if (!Physics2D.OverlapCircle(pos + Vector2.down, 0.1f, LayerMask.GetMask(layerMask)))
-        {
-            directions.Add(Vector2.down);
-        }
-        if (!Physics2D.OverlapCircle(pos + Vector2.right, 0.1f, LayerMask.GetMask(layerMask)))
-        {
-            directions.Add(Vector2.right);
-        }
-        if (!Physics2D.OverlapCircle(pos + Vector2.left, 0.1f, LayerMask.GetMask(layerMask)))
-        {
-            directions.Add(Vector2.left);
-        }
+        distanceCanWalk.Clear();
+        CheckDirection(Vector2.up, limitedDistance, layerMask);
+        CheckDirection(Vector2.down, limitedDistance, layerMask);
+        CheckDirection(Vector2.right, limitedDistance, layerMask);
+        CheckDirection(Vector2.left, limitedDistance, layerMask);
+
         if (directions.Count > 0)
         {
-            Vector2 dir = directions[Random.Range(0, directions.Count)];
-            SetAnimationOfMovement(dir);
-            return dir;
+            int index = Random.Range(0, directions.Count);
+            SetAnimationOfMovement(directions[index]);
+            direction = directions[index];
+            nextPosition += distanceCanWalk[index] * directions[index];
+            return nextPosition;
         }
-        limitedDistance = 0;
-        return Vector2.zero;
+        return nextPosition;
+    }
+    private void CheckDirection(Vector2 direction, int distance, string[] layerMask)
+    {
+        hit = Physics2D.Raycast(oldPosition, direction, distance, LayerMask.GetMask(layerMask));
+        if (hit.collider)
+        {
+            if (Mathf.RoundToInt(hit.distance) == 0)
+                return;
+            else
+            {
+                distanceCanWalk.Add(Mathf.RoundToInt(hit.distance));
+                directions.Add(direction);
+            }
+        }
+        else
+        {
+            distanceCanWalk.Add(limitedDistance);
+            directions.Add(direction);
+        }
     }
     protected void Move()
     {
-        if (isDead || direction == Vector2.zero)
+        if (isDead)
             return;
-        bool walkable = true;
-        if (nextPosition == (Vector2)transform.position)
-        {
-            nextPosition += direction;
-            if (isThroughBrick)
-            {
-                walkable = !Physics2D.OverlapCircle(nextPosition, 0.1f, LayerMask.GetMask("Wall", "Bomb"));
-            }
-            else
-            {
-                walkable = !Physics2D.OverlapCircle(nextPosition, 0.1f, LayerMask.GetMask("Wall", "Bomb", "Brick"));
-            }
-        }
-        if (!walkable)
-        {
-            direction = GetDirection();
-        }
+        if (nextPosition == (Vector2)transform.position) {
+            nextPosition = GetNextPosition();
+        } 
         else {
             CheckBomb();
             transform.position = Vector2.MoveTowards(transform.position, nextPosition, speed * Time.fixedDeltaTime);
@@ -116,9 +98,14 @@ public class Enemy : MonoBehaviour
     }
     protected bool CheckBomb()
     {
-        if (Physics2D.Raycast(transform.position, direction, 0.6f, LayerMask.GetMask("Bomb")))
-        {
-            ReverseDirection();
+        if (!Player.hasJustPutBomb)
+            return false;
+        float distanceToNextPosition = Vector2.Distance(transform.position, nextPosition);
+        RaycastHit2D h = Physics2D.Raycast(transform.position, direction, distanceToNextPosition, LayerMask.GetMask("Bomb"));
+        if (h.collider) {
+            Debug.Log(h.distance);
+            nextPosition = new Vector2(Mathf.RoundToInt(player.transform.position.x), Mathf.RoundToInt(player.transform.position.y)) - direction;
+            Player.hasJustPutBomb = false;
             return true;
         }
         return false;
@@ -127,19 +114,18 @@ public class Enemy : MonoBehaviour
     {
         SetAnimationOfMovement(direction * -1);
         direction = -1 * direction;
+        nextPosition = new Vector2(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y));
         nextPosition += direction;
     }
-    
+
     protected void SetAnimationOfMovement(Vector2 dir)
     {
-        if (dir == direction)
-            return;
-        if (dir == Vector2.zero)
+        if (dir == direction || dir == Vector2.zero)
             return;
         if (dir == Vector2.up || dir == Vector2.left)
-            anim.Play("GoLeft");
+            anim.Play(GoLeftHash);
         else
-            anim.Play("GoRight");
+            anim.Play(GoRightHash);
     }
 
     public void Die()
@@ -151,6 +137,11 @@ public class Enemy : MonoBehaviour
         anim.Play("Die");
         UIManager.Instance.SetGameScore(score);
         StartCoroutine(PoolEnemy.Instance.Despawn(gameObject));
+    }
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.tag == "Explosion")
+            Die();
     }
 
     protected void OnEnable()

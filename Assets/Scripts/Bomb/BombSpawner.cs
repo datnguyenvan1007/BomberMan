@@ -48,7 +48,6 @@ public class BombSpawner : MonoBehaviour
             waitingToExplode.Add(bomb);
         }
         AudioManager.Instance.PlayAudioPutBomb();
-        bomb.GetComponent<Collider2D>().isTrigger = true;
         bomb.transform.position = position;
         bomb.SetActive(true);
         return true;

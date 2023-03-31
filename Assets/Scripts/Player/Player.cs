@@ -9,17 +9,19 @@ public class Player : MonoBehaviour
     private Animator animator;
     private Rigidbody2D rig;
     private new Collider2D collider;
-    private PlayerInput input;
     private bool isDead = false;
     public static bool isCompleted = false;
     private float time = 0f;
     private Vector2 startingPlayerPosition;
     private Vector2 moveVector = Vector2.zero;
     private bool canPutBomb = true;
-    private void Awake()
-    {
+    public static bool hasJustPutBomb = false;
+    private int MoveXHash = Animator.StringToHash("MoveX");
+    private int MoveYHash = Animator.StringToHash("MoveY");
+    private int StartHash = Animator.StringToHash("Start");
+    private int DieHash = Animator.StringToHash("Die");
+    private void Awake() {
         startingPlayerPosition = transform.position;
-        input = new PlayerInput();
     }
     void Start()
     {
@@ -31,25 +33,31 @@ public class Player : MonoBehaviour
     {
         if (isDead || isCompleted)
             return;
+        // moveVector.x = Input.GetAxisRaw("Horizontal");
+        // moveVector.y = Input.GetAxisRaw("Vertical");
+        // if (Input.GetKey(KeyCode.Space)) {
+        //     PutBomb();
+        // }
+        // if (Input.GetKeyUp(KeyCode.F)) {
+        //     Detonate();
+        // }
         Move();
     }
     private void Move()
     {
         if (moveVector == Vector2.zero)
         {
-            animator.enabled = false;
+            animator.speed = 0;
             time = timeDelay;
         }
         else
         {
-            animator.enabled = true;
+            animator.speed = 1;
             time += Time.fixedDeltaTime;
             if (moveVector.y == 0)
             {
-                if (moveVector.x > 0)
-                    animator.Play("GoRight");
-                else
-                    animator.Play("GoLeft");
+                animator.SetFloat(MoveYHash, moveVector.y);
+                animator.SetFloat(MoveXHash, moveVector.x);
                 if (time >= timeDelay)
                 {
                     AudioManager.Instance.PlayAudioLeftRight();
@@ -58,10 +66,8 @@ public class Player : MonoBehaviour
             }
             if (moveVector.x == 0)
             {
-                if (moveVector.y > 0)
-                    animator.Play("GoBack");
-                else
-                    animator.Play("GoAhead");
+                animator.SetFloat(MoveXHash, moveVector.x);
+                animator.SetFloat(MoveYHash, moveVector.y);
                 if (time >= timeDelay)
                 {
                     AudioManager.Instance.PlayAudioUpDown();
@@ -80,6 +86,7 @@ public class Player : MonoBehaviour
             Vector3 pos = new Vector3(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y), 0);
             if (BombSpawner.Instance.Spawn(pos))
             {
+                hasJustPutBomb = true;
                 canPutBomb = false;
             }
         }
@@ -103,7 +110,7 @@ public class Player : MonoBehaviour
         rig.velocity = Vector2.zero;
         AudioManager.Instance.PlayAudioJustDied();
         animator.enabled = true;
-        animator.Play("Die");
+        animator.Play(DieHash);
         Invoke("Disable", 1f);
     }
     private void Disable()
@@ -113,44 +120,10 @@ public class Player : MonoBehaviour
     }
     private void OnEnable()
     {
-        input.Enable();
-        input.Player.Move.performed += OnMovePerformed;
-        input.Player.Move.canceled += OnMoveCanceled;
-        input.Player.PutBomb.performed += OnPutBombPerformed;
-        input.Player.Detonate.performed += OnDetonatePerformed;
 
         isCompleted = false;
         isDead = false;
         transform.position = startingPlayerPosition;
-    }
-    private void OnDisable()
-    {
-        input.Disable();
-        input.Player.Move.performed -= OnMovePerformed;
-        input.Player.Move.canceled -= OnMoveCanceled;
-        input.Player.PutBomb.performed -= OnPutBombPerformed;
-        input.Player.Detonate.performed -= OnDetonatePerformed;
-    }
-
-    private void OnMovePerformed(InputAction.CallbackContext context)
-    {
-        moveVector = context.ReadValue<Vector2>();
-        moveVector = new Vector2(Mathf.Round(moveVector.x), Mathf.Round(moveVector.y));
-    }
-
-    private void OnMoveCanceled(InputAction.CallbackContext context)
-    {
-        moveVector = Vector2.zero;
-    }
-
-    private void OnPutBombPerformed(InputAction.CallbackContext context)
-    {
-        PutBomb();
-    }
-
-    private void OnDetonatePerformed(InputAction.CallbackContext context)
-    {
-        Detonate();
     }
 
     public void OnMoveExit()
@@ -180,17 +153,20 @@ public class Player : MonoBehaviour
             if (canPutBomb)
                 Die();
         }
+        if (tag == "Explosion" && GameData.flamePass == 0 && GameData.mystery == 0)
+        {
+            Die();
+        }
     }
     private void OnTriggerStay2D(Collider2D collision)
     {
-        string tag = collision.gameObject.tag;
-        if (tag == "ExitGate" && PoolEnemy.Instance.enemyAlive == 0)
+        if (collision.gameObject.tag == "ExitGate" && PoolEnemy.Instance.enemyAlive == 0)
         {
             if (isCompleted)
                 return;
             isCompleted = true;
             rig.velocity = Vector2.zero;
-            animator.Play("Start");
+            animator.Play(StartHash);
             AudioManager.Instance.Stop();
             transform.position = collision.transform.position;
             AudioManager.Instance.PlayAudioLevelComplete();
@@ -200,11 +176,8 @@ public class Player : MonoBehaviour
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
-        string tag = collision.gameObject.tag;
-        if (tag == "Bomb")
+        if (collision.gameObject.tag == "Bomb")
         {
-            if (GameData.bombPass == 0)
-                collision.GetComponent<Collider2D>().isTrigger = false;
             canPutBomb = true;
         }
 

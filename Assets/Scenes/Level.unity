@@ -965,7 +965,6 @@ GameObject:
   - component: {fileID: 160203702}
   - component: {fileID: 160203705}
   - component: {fileID: 160203704}
-  - component: {fileID: 160203703}
   m_Layer: 0
   m_Name: JOYSTICK_SIMPLE2_0
   m_TagString: Untagged
@@ -993,20 +992,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 50, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &160203703
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 160203701}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e9d677f1681015749b15c436eec6d880, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_MovementRange: 50
-  m_ControlPath: <Joystick>/stick
 --- !u!114 &160203704
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3973,7 +3958,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 987309956}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.372731, y: 2.064158, z: -9.991739}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4213,7 +4198,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_BindingMode: 1
   m_FollowOffset: {x: 0, y: 0, z: -10}
-  m_XDamping: 0.5
+  m_XDamping: 1
   m_YDamping: 1
   m_ZDamping: 1
   m_AngularDampingMode: 0
@@ -7558,6 +7543,7 @@ GameObject:
   - component: {fileID: 224038505153706640}
   - component: {fileID: 222349186513908858}
   - component: {fileID: 114822611951086398}
+  - component: {fileID: 224038505153706641}
   m_Layer: 5
   m_Name: Joystick
   m_TagString: Untagged
@@ -7686,6 +7672,19 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &224038505153706641
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1075538009216460}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b522030e6b67fb4ea849be5450db1f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ArrowKeysSimulationEnabled: 0
 --- !u!1001 &1130886114847669570
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7968,7 +7967,6 @@ GameObject:
   - component: {fileID: 1306881177010985029}
   - component: {fileID: 1306881177010985020}
   - component: {fileID: 1306881177010985028}
-  - component: {fileID: 1306881177010985030}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -8082,48 +8080,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!114 &1306881177010985030
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1306881177010985023}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Actions: {fileID: -944628639613478452, guid: 044a529b67dde0f43a6e38c7142440fc, type: 3}
-  m_NotificationBehavior: 3
-  m_UIInputModule: {fileID: 0}
-  m_DeviceLostEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_DeviceRegainedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ControlsChangedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ActionEvents:
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 91066ef8-0353-43bd-92b2-680bdcc2d2af
-    m_ActionName: Player/Move[/Keyboard/upArrow,/Keyboard/downArrow,/Keyboard/leftArrow,/Keyboard/rightArrow,/Keyboard/w,/Keyboard/s,/Keyboard/d,/Keyboard/a]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: c4a1e705-3efa-4ab4-a5a3-974c0e794d07
-    m_ActionName: Player/PutBomb[/Keyboard/space]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 740f3e72-e182-4537-9153-de851d54fdc0
-    m_ActionName: Player/Detonate[/Keyboard/f]
-  m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: 
-  m_DefaultActionMap: Player
-  m_SplitScreenIndex: -1
-  m_Camera: {fileID: 0}
 --- !u!1001 &2604076108220182899
 PrefabInstance:
   m_ObjectHideFlags: 0
