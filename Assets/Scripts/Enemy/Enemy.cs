@@ -19,12 +19,13 @@ public class Enemy : MonoBehaviour
     List<Vector2> directions = new List<Vector2>();
     private int GoLeftHash = Animator.StringToHash("GoLeft");
     private int GoRightHash = Animator.StringToHash("GoRight");
+    private int MoveHash = Animator.StringToHash("Move");
 
     protected virtual void Start()
     {
         player = GameObject.Find("Player");
         anim = GetComponent<Animator>();
-        collider = gameObject.GetComponent<Collider2D>();
+        collider = GetComponent<Collider2D>();
         nextPosition = transform.position;
         oldPosition = transform.position;
     }
@@ -103,7 +104,6 @@ public class Enemy : MonoBehaviour
         float distanceToNextPosition = Vector2.Distance(transform.position, nextPosition);
         RaycastHit2D h = Physics2D.Raycast(transform.position, direction, distanceToNextPosition, LayerMask.GetMask("Bomb"));
         if (h.collider) {
-            Debug.Log(h.distance);
             nextPosition = new Vector2(Mathf.RoundToInt(player.transform.position.x), Mathf.RoundToInt(player.transform.position.y)) - direction;
             Player.hasJustPutBomb = false;
             return true;
@@ -122,10 +122,11 @@ public class Enemy : MonoBehaviour
     {
         if (dir == direction || dir == Vector2.zero)
             return;
-        if (dir == Vector2.up || dir == Vector2.left)
-            anim.Play(GoLeftHash);
-        else
-            anim.Play(GoRightHash);
+        // if (dir == Vector2.up || dir == Vector2.left)
+        //     anim.Play(GoLeftHash);
+        // else
+        //     anim.Play(GoRightHash);
+        anim.SetFloat(MoveHash, dir.x + dir.y);
     }
 
     public void Die()
@@ -135,8 +136,8 @@ public class Enemy : MonoBehaviour
         isDead = true;
         collider.enabled = false;
         anim.Play("Die");
-        UIManager.Instance.SetGameScore(score);
-        StartCoroutine(PoolEnemy.Instance.Despawn(gameObject));
+        UIManager.instance.SetGameScore(score);
+        StartCoroutine(PoolEnemy.instance.Despawn(gameObject));
     }
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -148,6 +149,8 @@ public class Enemy : MonoBehaviour
     {
         direction = Vector2.zero;
         isDead = false;
+        oldPosition = transform.position;
+        nextPosition = transform.position;
     }
     protected void OnDisable()
     {

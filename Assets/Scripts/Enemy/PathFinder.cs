@@ -23,8 +23,9 @@ public class PathFinder : MonoBehaviour
             return pathToTarget;
         if (!isThroughBrick && Physics2D.OverlapCircle(targetPosition, 0.1f, LayerMask.GetMask("Brick")))
             return pathToTarget;
-        if (Physics2D.OverlapCircle(targetPosition, 0.1f, LayerMask.GetMask("Bomb")))
+        if (Physics2D.OverlapCircle(targetPosition, 0.1f, LayerMask.GetMask("Bomb"))) {
             return pathToTarget;
+        }
 
         Node startNode = new Node(0, startPosition, targetPosition, null);
         checkedNodes.Add(startNode);

@@ -17,7 +17,7 @@ public class ExitGate : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         for (int i = 1; i <= 4; i++)
         {
-            PoolEnemy.Instance.Spawn(enemy, transform.position);
+            PoolEnemy.instance.Spawn(enemy, transform.position);
         }
     }
 }

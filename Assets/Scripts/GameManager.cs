@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Linq;
 using System.Collections.Generic;
@@ -15,6 +16,12 @@ public static class GameData
     public static int flamePass;
     public static int detonator;
     public static int mystery = 0;
+    public static int hackFlame;
+    public static bool hackWallPass;
+    public static bool hackFlamePass;
+    public static bool hackBombPass;
+    public static bool hackDetonator;
+    public static bool hackImmortal;
 }
 public class GameManager : MonoBehaviour
 {
@@ -36,9 +43,7 @@ public class GameManager : MonoBehaviour
     private bool isActivedExitGate = false;
     private bool isActiveItem = false;
     private float timeRemain;
-
-    private static GameManager instance;
-    public static GameManager Instance { get => instance; }
+    public static GameManager instance;
     private void Awake()
     {
         Application.targetFrameRate = 60;
@@ -66,11 +71,12 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         for (int i = 1; i <= GameData.numberOfBombs; i++)
-            BombSpawner.Instance.AddBomb();
-        UIManager.Instance.SetControllerOpacity(PlayerPrefs.GetFloat("ControllerOpacity", 45) / 100);
-        UIManager.Instance.SetAcitveControllerType(PlayerPrefs.GetInt("ControllerType", 2));
-        UIManager.Instance.SetTimeGame(timeRemain);
-        UIManager.Instance.SetGameScore(0);
+            BombSpawner.instance.AddBomb();
+        UIManager.instance.SetControllerOpacity(PlayerPrefs.GetFloat("ControllerOpacity", 45) / 100);
+        UIManager.instance.SetAcitveControllerType(PlayerPrefs.GetInt("ControllerType", 2));
+        UIManager.instance.SetActiveButtonDetonator(GameData.detonator);
+        UIManager.instance.SetTimeGame(timeRemain);
+        UIManager.instance.SetGameScore(0);
         StartCoroutine(LoadLevel());
     }
 
@@ -124,29 +130,30 @@ public class GameManager : MonoBehaviour
         TimeOut(false);
         player.SetActive(true);
 
-        AudioManager.Instance.Stop();
+        AudioManager.instance.Stop();
 
-        UIManager.Instance.SetActivePlayingScene(false);
+        UIManager.instance.SetActivePlayingScene(false);
         if (PlayerPrefs.GetInt("Stage", 1) >= enemiesAndItemPrefab.Count)
         {
-            UIManager.Instance.ActiveWinScene();
+            UIManager.instance.ActiveWinScene();
             DeleteAllData();
             Invoke("RedirectHome", 2f);
             yield break;
         }
 
-        UIManager.Instance.SetActiveButtonDetonator(GameData.detonator);
-        UIManager.Instance.SetValueStageAndLeft(PlayerPrefs.GetInt("Stage", 1), PlayerPrefs.GetInt("Left", 2));
-        UIManager.Instance.SetActiveStartingScene(true);
-        BombSpawner.Instance.ExplodeAllBombs();
+        // UIManager.instance.SetActiveButtonDetonator(GameData.detonator);
+        UIManager.instance.SetValueStageAndLeft(PlayerPrefs.GetInt("Stage", 1), PlayerPrefs.GetInt("Left", 2));
+        UIManager.instance.SetActiveStartingScene(true);
+        BombSpawner.instance.ExplodeAllBombs();
 
-        AudioManager.Instance.PlayAudioLevelStart();
+        AudioManager.instance.PlayAudioLevelStart();
 
         yield return new WaitForSeconds(3.0f);
-        UIManager.Instance.SetActiveStartingScene(false);
+        UIManager.instance.SetActiveStartingScene(false);
+        DevManager.instance.SetInteractableForButtonNextLevel(true);
         InitMap();
-        UIManager.Instance.SetActivePlayingScene(true);
-        AudioManager.Instance.PlayAudioInGame();
+        UIManager.instance.SetActivePlayingScene(true);
+        AudioManager.instance.PlayAudioInGame();
 
         isPlayingLevel = true;
         timeRemain = 200;
@@ -154,7 +161,7 @@ public class GameManager : MonoBehaviour
     void InitMap()
     {
         int index;
-        index = Random.Range(0, mapsPrefab.Count);
+        index = UnityEngine.Random.Range(0, mapsPrefab.Count);
         listOfBrickPositions.Clear();
         mapOfCurrentLevel = Instantiate(mapsPrefab[index], levelObject.transform);
         foreach (Transform brick in mapOfCurrentLevel.transform)
@@ -172,18 +179,24 @@ public class GameManager : MonoBehaviour
         listOfPositionsCanFillEnemy = listOfPositions.Except(listOfBrickPositions).ToList();
         foreach (Transform enemy in enemies)
         {
-            enemy.position = GetPositionOfEnemy();
-            listOfPositionsCanFillEnemy.Remove(enemy.position);
+            int index = GetIndexPositionOfEnemy();
+            enemy.position = listOfPositionsCanFillEnemy[index];
+            try {
+                listOfPositionsCanFillEnemy.RemoveRange(index, 5);
+            }
+            catch (Exception)
+            {
+                listOfPositionsCanFillEnemy.RemoveAt(index);
+            }
         }
     }
-    Vector2 GetPositionOfEnemy()
+    int GetIndexPositionOfEnemy()
     {
-        int index = Random.Range(0, listOfPositionsCanFillEnemy.Count);
-        return listOfPositionsCanFillEnemy[index];
+        return UnityEngine.Random.Range(0, listOfPositionsCanFillEnemy.Count);
     }
     void HideExitGate(ref int index)
     {
-        index = Random.Range(0, listOfBrickPositions.Count);
+        index = UnityEngine.Random.Range(0, listOfBrickPositions.Count);
         exitGate.transform.position = listOfBrickPositions[index];
         RaycastHit2D hit = Physics2D.Raycast(exitGate.transform.position, Vector3.forward, 0.5f, LayerMask.GetMask("Brick"));
         brickOverExitGate = hit.collider.gameObject;
@@ -196,7 +209,7 @@ public class GameManager : MonoBehaviour
         item = enemiesAndItemOfCurrentLevel.transform.GetChild(1).gameObject;
         do
         {
-            index = Random.Range(0, listOfBrickPositions.Count);
+            index = UnityEngine.Random.Range(0, listOfBrickPositions.Count);
         } while (index == indexOfExitGate);
         item.transform.position = listOfBrickPositions[index];
         RaycastHit2D hit = Physics2D.Raycast(item.transform.position, Vector3.forward, 0.5f, LayerMask.GetMask("Brick"));
@@ -213,11 +226,11 @@ public class GameManager : MonoBehaviour
             if (Player.isCompleted)
                 return;
             TimeOut(true);
-            PoolEnemy.Instance.enemyAlive += 7;
+            PoolEnemy.instance.enemyAlive += 7;
             return;
         }
         timeRemain -= Time.fixedDeltaTime;
-        UIManager.Instance.SetTimeGame(timeRemain);
+        UIManager.instance.SetTimeGame(timeRemain);
     }
     IEnumerator CanActiveExitGate()
     {
@@ -262,12 +275,12 @@ public class GameManager : MonoBehaviour
     }
     public void Lose()
     {
-        SaveDataWhenLosing();
         StartCoroutine(GoToPreviousLevel());
     }
     private IEnumerator GoToPreviousLevel() 
     {
         yield return new WaitForSeconds(2f);
+        SaveDataWhenLosing();
         isPlayingLevel = false;
         if (PlayerPrefs.GetInt("Left", 2) > 0)
         {
@@ -275,13 +288,13 @@ public class GameManager : MonoBehaviour
             Destroy(mapOfCurrentLevel);
             Destroy(enemiesAndItemOfCurrentLevel);
             GetValueForGameData();
-            UIManager.Instance.SetGameScore(0);
+            UIManager.instance.SetGameScore(0);
             StartCoroutine(LoadLevel());
         }
         else
         {
-            UIManager.Instance.SetActivePlayingScene(false);
-            UIManager.Instance.ActiveLoseScene();
+            UIManager.instance.SetActivePlayingScene(false);
+            UIManager.instance.ActiveLoseScene();
             DeleteAllData();
             Invoke("RedirectHome", 2f);
         }
@@ -302,5 +315,12 @@ public class GameManager : MonoBehaviour
     void RedirectHome()
     {
         SceneManager.LoadScene(0);
+    }
+    public void SetTriggerAllBricks(bool isTrigger)
+    {
+        foreach (Transform brick in mapOfCurrentLevel.transform)
+        {
+            brick.GetComponent<Brick>().SetTrigger(isTrigger);
+        }
     }
 }

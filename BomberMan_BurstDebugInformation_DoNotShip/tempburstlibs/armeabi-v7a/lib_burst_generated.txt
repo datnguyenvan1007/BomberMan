@@ -149,12 +149,12 @@ Library: lib_burst_generated
 --generate-link-xml=Temp\burst.link.xml
 --output=D:\unity\BombMan\Temp\StagingArea\tempburstlibs\armeabi-v7a\lib_burst_generated
 --root-assembly=D:\unity\BombMan\Temp\StagingArea\Data\Managed\UnityEngine.UI.dll
+--root-assembly=D:\unity\BombMan\Temp\StagingArea\Data\Managed\Assembly-CSharp.dll
 --root-assembly=D:\unity\BombMan\Temp\StagingArea\Data\Managed\Unity.VisualScripting.Flow.dll
 --root-assembly=D:\unity\BombMan\Temp\StagingArea\Data\Managed\Unity.Mathematics.dll
 --root-assembly=D:\unity\BombMan\Temp\StagingArea\Data\Managed\Unity.InputSystem.dll
 --root-assembly=D:\unity\BombMan\Temp\StagingArea\Data\Managed\Unity.VisualScripting.State.dll
 --root-assembly=D:\unity\BombMan\Temp\StagingArea\Data\Managed\Unity.VisualScripting.Core.dll
---root-assembly=D:\unity\BombMan\Temp\StagingArea\Data\Managed\Assembly-CSharp.dll
 --root-assembly=D:\unity\BombMan\Temp\StagingArea\Data\Managed\Unity.Burst.dll
 --root-assembly=D:\unity\BombMan\Temp\StagingArea\Data\Managed\Unity.2D.Animation.Runtime.dll
 --root-assembly=D:\unity\BombMan\Temp\StagingArea\Data\Managed\Unity.TextMeshPro.dll

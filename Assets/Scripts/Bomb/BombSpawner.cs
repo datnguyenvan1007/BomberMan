@@ -7,8 +7,7 @@ public class BombSpawner : MonoBehaviour
     [SerializeField] private List<GameObject> bombs;
     [SerializeField] private GameObject bombPrefab;
     private List<GameObject> waitingToExplode = new List<GameObject>();
-    private static BombSpawner instance;
-    public static BombSpawner Instance { get => instance; }
+    public static BombSpawner instance;
 
     private void Awake()
     {
@@ -38,16 +37,16 @@ public class BombSpawner : MonoBehaviour
     }
     public bool Spawn(Vector3 position)
     {
-        if (Physics2D.OverlapCircle(position, 0.1f, LayerMask.GetMask("Brick")))
+        if (Physics2D.OverlapCircle(position, 0.1f, LayerMask.GetMask("Brick", "Bomb")))
             return false;
         GameObject bomb = GetBombFromPool();
         if (bomb == null)
             return false;
-        if (GameData.detonator == 1)
+        if (GameData.detonator == 1 || GameData.hackDetonator)
         {
             waitingToExplode.Add(bomb);
         }
-        AudioManager.Instance.PlayAudioPutBomb();
+        AudioManager.instance.PlayAudioPutBomb();
         bomb.transform.position = position;
         bomb.SetActive(true);
         return true;
@@ -68,5 +67,12 @@ public class BombSpawner : MonoBehaviour
                 Destroy(bomb.gameObject);
         }
         waitingToExplode.Clear();
+    }
+    public void SetTriggerForBomb(bool isTrigger) {
+        foreach (Transform bomb in gameObject.transform)
+        {
+            if (bomb.gameObject.activeSelf)
+                bomb.GetComponent<Collider2D>().isTrigger = isTrigger;
+        }
     }
 }

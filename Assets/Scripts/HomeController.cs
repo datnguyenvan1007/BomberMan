@@ -30,6 +30,9 @@ public class HomeController : MonoBehaviour
     [SerializeField] private Sprite[] spritesOfSoundOff;
     [SerializeField] private Sprite[] spritesOfButtonYes;
     [SerializeField] private Sprite[] spritesOfButtonNo;
+    [SerializeField] private GameObject buttons;
+    [SerializeField] private GameObject btnContinue;
+    [SerializeField] private GameObject prompt;
     private AudioSource audioSource;
     void Start()
     {
@@ -37,6 +40,7 @@ public class HomeController : MonoBehaviour
 
         controllerOpacitySlider.value = PlayerPrefs.GetFloat("ControllerOpacity", 45f);
         controlerOpacityPercent.text = controllerOpacitySlider.value + "%";
+        btnContinue.SetActive(PlayerPrefs.HasKey("Left"));
 
         if (PlayerPrefs.GetInt("ControllerType", 2) == 1)
         {
@@ -135,6 +139,25 @@ public class HomeController : MonoBehaviour
     public void OnPointerUpNewGame()
     {
         buttonNewGame.sprite = spritesOfButtonNewGame[0];
+        if (PlayerPrefs.HasKey("Left"))
+        {
+            buttons.SetActive(false);
+            prompt.SetActive(true);
+        }
+        else
+        {
+            PlayerPrefs.DeleteKey("Score");
+            PlayerPrefs.DeleteKey("NumberOfBombs");
+            PlayerPrefs.DeleteKey("Flame");
+            PlayerPrefs.DeleteKey("WallPass");
+            PlayerPrefs.DeleteKey("BombPass");
+            PlayerPrefs.DeleteKey("FlamePass");
+            PlayerPrefs.DeleteKey("Speed");
+            PlayerPrefs.DeleteKey("Stage");
+            PlayerPrefs.DeleteKey("Left");
+            PlayerPrefs.DeleteKey("Detonator");
+            SceneManager.LoadScene(1);
+        }
     }
     public void OnPointerDownButtonYes()
     {

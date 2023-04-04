@@ -8,8 +8,7 @@ public class ExplosionSpawner : MonoBehaviour
     [SerializeField] private GameObject bodyPrefab;
     [SerializeField] private GameObject headPrefab;
     private List<GameObject> explosions = new List<GameObject>();
-    private static ExplosionSpawner instance;
-    public static ExplosionSpawner Instance { get => instance; }
+    public static ExplosionSpawner instance;
     private void Awake()
     {
         ExplosionSpawner.instance = this;
@@ -44,11 +43,12 @@ public class ExplosionSpawner : MonoBehaviour
     {
         bool isSmallerRange = false;
         Vector2 pos = trans.position;
-        int count = GameData.flame;
+        int flame = GameData.hackFlame;
+        int count = flame;
         RaycastHit2D hit = Physics2D.Raycast(pos, direction, count, LayerMask.GetMask("Bomb", "Wall", "Brick"));
         if (hit.collider) {
             count = Mathf.RoundToInt(hit.distance);
-            if (count < GameData.flame)
+            if (count < flame)
             {
                 isSmallerRange = true;
             }

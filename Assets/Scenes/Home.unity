@@ -676,31 +676,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 380828981}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1563117825}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1987322610}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &380828981
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -860,6 +836,9 @@ MonoBehaviour:
   spritesOfButtonNo:
   - {fileID: -1939996219, guid: de06274170c342d4f9849fe3e2493393, type: 3}
   - {fileID: -322995162, guid: de06274170c342d4f9849fe3e2493393, type: 3}
+  buttons: {fileID: 1563117825}
+  btnContinue: {fileID: 684243368}
+  prompt: {fileID: 1987322610}
 --- !u!82 &453104834
 AudioSource:
   m_ObjectHideFlags: 0

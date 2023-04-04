@@ -9,7 +9,7 @@ public class SmartEnemy : Enemy
     private float limitedDistanceCanFindPlayer;
     private List<Vector2> pathToPlayer = new List<Vector2>();
     private bool isMoving = false;
-    private bool hasJustSwitchedToNormal = false;
+    // private bool hasJustSwitchedToNormal = false;
     protected override void Start()
     {
         base.Start();
@@ -24,16 +24,14 @@ public class SmartEnemy : Enemy
         AI();
         if (pathToPlayer.Count == 0)
         {
-            if (hasJustSwitchedToNormal)
-            {
-                nextPosition = new Vector2(Mathf.Round(transform.position.x), Mathf.Round(transform.position.y));
-                //oldPosition = nextPosition;
-                Vector2 dir = nextPosition - (Vector2)transform.position;
-                dir.Normalize();
-                SetAnimationOfMovement(dir);
-                hasJustSwitchedToNormal = false;
-            }
-            // ChangeDirectionByDistance();
+            // if (hasJustSwitchedToNormal)
+            // {
+            //     nextPosition = new Vector2(Mathf.Round(transform.position.x), Mathf.Round(transform.position.y));
+            //     Vector2 dir = nextPosition - (Vector2)transform.position;
+            //     dir.Normalize();
+            //     SetAnimationOfMovement(dir);
+            //     hasJustSwitchedToNormal = false;
+            // }
             Move();
         }
     }
@@ -70,6 +68,7 @@ public class SmartEnemy : Enemy
                 isMoving = true;
                 //set animation
                 Vector2 dir = pathToPlayer[pathToPlayer.Count - 1] - (Vector2)transform.position;
+                nextPosition = pathToPlayer[pathToPlayer.Count - 1];
                 dir.Normalize();
                 SetAnimationOfMovement(dir);
                 direction = dir;
@@ -77,10 +76,10 @@ public class SmartEnemy : Enemy
         }
         if (Vector2.Distance(transform.position, player.transform.position) > limitedDistanceCanFindPlayer)
         {
-            if (isMoving)
-            {
-                hasJustSwitchedToNormal = true;
-            }
+            // if (isMoving)
+            // {
+            //     hasJustSwitchedToNormal = true;
+            // }
             pathToPlayer.Clear();
             isMoving = false;
         }

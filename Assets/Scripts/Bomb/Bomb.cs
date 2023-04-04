@@ -4,13 +4,16 @@ using UnityEngine;
 
 public class Bomb : MonoBehaviour
 {
+    private bool isExploded = false;
     private new Collider2D collider;
-    private void Start() {
+    private void Start()
+    {
         collider = GetComponent<Collider2D>();
     }
     private void OnEnable()
     {
-        if (GameData.detonator == 0)
+        isExploded = false;
+        if (GameData.detonator == 0 && !GameData.hackDetonator)
         {
             StartCoroutine(DestroyByTime());
         }
@@ -22,17 +25,17 @@ public class Bomb : MonoBehaviour
     }
     public void Explode()
     {
+        isExploded = true;
+        BombSpawner.instance.Destroy(gameObject);
+        AudioManager.instance.PlayAudioBoom();
+        ExplosionSpawner.instance.Explode(transform);
         collider.isTrigger = true;
-        BombSpawner.Instance.Destroy(gameObject);
-        AudioManager.Instance.PlayAudioBoom();
-        ExplosionSpawner.Instance.Explode(transform);
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
-        string tag = collision.gameObject.tag;
         if (collision.gameObject.tag == "Player")
         {
-            if (GameData.bombPass == 0)
+            if (GameData.bombPass == 0 && !GameData.hackBombPass && !isExploded)
                 collider.isTrigger = false;
         }
 

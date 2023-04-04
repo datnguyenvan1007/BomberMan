@@ -17,8 +17,7 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioClip putBomb;
     [SerializeField] private AudioClip upDown;
     private AudioSource audioSource;
-    private static AudioManager instance;
-    public static AudioManager Instance { get => instance; }
+    public static AudioManager instance;
     private void Awake()
     {
         audioSource = GetComponent<AudioSource>();

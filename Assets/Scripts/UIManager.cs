@@ -39,8 +39,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Sprite[] spritesOfButtonYes;
     [SerializeField] private Sprite[] spritesOfButtonNo;
     private List<Vector2> controllersPosition = new List<Vector2>();
-    private static UIManager instance;
-    public static UIManager Instance { get => instance; }
+    public static UIManager instance;
     private void Awake()
     {
         UIManager.instance = this;
@@ -139,14 +138,14 @@ public class UIManager : MonoBehaviour
         {
             soundOn.sprite = spritesOfButtonOn[1];
             soundOff.sprite = spritesOfButtonOff[0];
-            AudioManager.Instance.UnMute();
+            AudioManager.instance.UnMute();
             PlayerPrefs.SetInt("Sound", 1);
         }
         else
         {
             soundOn.sprite = spritesOfButtonOn[0];
             soundOff.sprite = spritesOfButtonOff[1];
-            AudioManager.Instance.Mute();
+            AudioManager.instance.Mute();
             PlayerPrefs.SetInt("Sound", 0);
         }
     }

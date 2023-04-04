@@ -6,9 +6,7 @@ public class PoolEnemy : MonoBehaviour
 {
     [SerializeField] private List<GameObject> enemies = null ;
     public int enemyAlive;
-
-    private static PoolEnemy instance;
-    public static PoolEnemy Instance { get => instance; }
+    public static PoolEnemy instance;
     void Awake()
     {
         enemyAlive = transform.childCount;

@@ -6,11 +6,13 @@ public class Brick : MonoBehaviour
 {
     private Animator anim;
     private new Collider2D collider;
+    public static Brick instance;
     private void Start()
     {
+        instance = this;
         collider = GetComponent<Collider2D>();
         anim = GetComponent<Animator>();
-        if (GameData.wallPass == 1)
+        if (GameData.wallPass == 1 || GameData.hackWallPass)
         {
             collider.isTrigger = true;
         }
