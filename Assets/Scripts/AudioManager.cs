@@ -22,6 +22,8 @@ public class AudioManager : MonoBehaviour
     {
         audioSource = GetComponent<AudioSource>();
         AudioManager.instance = this;
+        if (PlayerPrefs.GetInt("Sound", 1) == 0) 
+            Mute();
     }
 
     public void PlayAudioUpDown()

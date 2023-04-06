@@ -10,7 +10,7 @@ public class Player : MonoBehaviour
     private Animator animator;
     private Rigidbody2D rig;
     private new Collider2D collider;
-    private bool isDead = false;
+    public static bool isDead = false;
     public static bool isCompleted = false;
     private float time = 0f;
     private Vector2 startingPlayerPosition;
@@ -128,10 +128,14 @@ public class Player : MonoBehaviour
     }
     public void OnMoveXEnter(int x)
     {
+        if (isCompleted || isDead)
+            return;
         moveVector = new Vector2(x, 0);
     }
     public void OnMoveYEnter(int y)
     {
+        if (isCompleted || isDead)
+            return;
         moveVector = new Vector2(0, y);
     }
 
@@ -160,9 +164,11 @@ public class Player : MonoBehaviour
         {
             if (isCompleted)
                 return;
+            moveVector = Vector2.zero;
             isCompleted = true;
             rig.velocity = Vector2.zero;
             animator.Play(StartHash);
+            animator.speed = 0;
             AudioManager.instance.Stop();
             transform.position = collision.transform.position;
             AudioManager.instance.PlayAudioLevelComplete();
@@ -176,6 +182,8 @@ public class Player : MonoBehaviour
         if (collision.gameObject.tag == "Bomb")
         {
             isQuitBomb = true;
+            if (hasJustPutBomb)
+                hasJustPutBomb = false;
         }
 
     }

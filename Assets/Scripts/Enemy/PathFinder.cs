@@ -8,8 +8,68 @@ public class PathFinder : MonoBehaviour
     static List<Vector2> pathToTarget;
     static List<Node> checkedNodes;
     static List<Node> waitingNodes;
-    static bool addStartingPosition = false;
+    // static bool addStartingPosition = false;
+    // static bool isEqualTarget = false;
+    static Node nodeToCheck;
 
+    // public static List<Vector2> GetPath(Vector2 start, Vector2 target, bool isThroughBrick)
+    // {
+    //     pathToTarget = new List<Vector2>();
+    //     checkedNodes = new List<Node>();
+    //     waitingNodes = new List<Node>();
+
+    //     Vector2 startPosition = new Vector2(Mathf.Round(start.x), Mathf.Round(start.y));
+    //     Vector2 targetPosition = new Vector2(Mathf.Round(target.x), Mathf.Round(target.y));
+    //     addStartingPosition = !startPosition.Equals(start);
+
+    //     if (startPosition == targetPosition)
+    //         return pathToTarget;
+    //     if (!isThroughBrick && Physics2D.OverlapCircle(targetPosition, 0.1f, LayerMask.GetMask("Brick")))
+    //         return pathToTarget;
+    //     if (Physics2D.OverlapCircle(targetPosition, 0.1f, LayerMask.GetMask("Bomb"))) {
+    //         return pathToTarget;
+    //     }
+    //     if (!isThroughBrick && CheckAround(targetPosition)) 
+    //         return pathToTarget;
+
+    //     Node startNode = new Node(0, startPosition, targetPosition, null);
+    //     checkedNodes.Add(startNode);
+    //     waitingNodes.AddRange(GetNeighbourNodes(startNode));
+
+    //     while (waitingNodes.Count > 0)
+    //     {
+    //         Node nodeToCheck = waitingNodes.Where(x => x.F == waitingNodes.Min(y => y.F)).FirstOrDefault();
+    //         if (nodeToCheck.Position == targetPosition)
+    //         {
+    //             return CalculatePathFromNode(nodeToCheck);
+    //         }
+    //         bool walkable;
+    //         if (isThroughBrick)
+    //         {
+    //             walkable = !Physics2D.OverlapCircle(nodeToCheck.Position, 0.1f, LayerMask.GetMask("Wall", "Bomb"));
+    //         }
+    //         else
+    //         {
+    //             walkable = !Physics2D.OverlapCircle(nodeToCheck.Position, 0.1f, LayerMask.GetMask("Wall", "Bomb", "Brick"));
+    //         }
+    //         if (!walkable)
+    //         {
+    //             waitingNodes.Remove(nodeToCheck);
+    //             checkedNodes.Add(nodeToCheck);
+    //         }
+    //         else
+    //         {
+    //             waitingNodes.Remove(nodeToCheck);
+    //             if (!checkedNodes.Where(x => x.Position == nodeToCheck.Position).Any())
+    //             {
+    //                 checkedNodes.Add(nodeToCheck);
+    //                 waitingNodes.AddRange(GetNeighbourNodes(nodeToCheck));
+    //             }
+    //         }
+    //     }
+
+    //     return pathToTarget;
+    // }
     public static List<Vector2> GetPath(Vector2 start, Vector2 target, bool isThroughBrick)
     {
         pathToTarget = new List<Vector2>();
@@ -18,12 +78,14 @@ public class PathFinder : MonoBehaviour
 
         Vector2 startPosition = new Vector2(Mathf.Round(start.x), Mathf.Round(start.y));
         Vector2 targetPosition = new Vector2(Mathf.Round(target.x), Mathf.Round(target.y));
-        addStartingPosition = !startPosition.Equals(start);
+        // isEqualTarget = targetPosition.Equals(target);
+
         if (startPosition == targetPosition)
             return pathToTarget;
-        if (!isThroughBrick && Physics2D.OverlapCircle(targetPosition, 0.1f, LayerMask.GetMask("Brick")))
+        if (!isThroughBrick && Physics2D.OverlapCircle(startPosition, 0.1f, LayerMask.GetMask("Brick")))
             return pathToTarget;
-        if (Physics2D.OverlapCircle(targetPosition, 0.1f, LayerMask.GetMask("Bomb"))) {
+        if (Physics2D.OverlapCircle(startPosition, 0.1f, LayerMask.GetMask("Bomb")))
+        {
             return pathToTarget;
         }
 
@@ -33,11 +95,13 @@ public class PathFinder : MonoBehaviour
 
         while (waitingNodes.Count > 0)
         {
-            Node nodeToCheck = waitingNodes.Where(x => x.F == waitingNodes.Min(y => y.F)).FirstOrDefault();
+            nodeToCheck = waitingNodes.Where(x => x.F == waitingNodes.Min(y => y.F)).FirstOrDefault();
             if (nodeToCheck.Position == targetPosition)
             {
-                return CalculatePathFromNode(nodeToCheck);
+                return CalculatePathFromNode(nodeToCheck, target);
             }
+            if (nodeToCheck.F >= 8)
+                break;
             bool walkable;
             if (isThroughBrick)
             {
@@ -65,18 +129,25 @@ public class PathFinder : MonoBehaviour
 
         return pathToTarget;
     }
-    public static List<Vector2> CalculatePathFromNode(Node node)
+    public static List<Vector2> CalculatePathFromNode(Node node, Vector2 target)
     {
         var path = new List<Vector2>();
         Node currentNode = node;
+        if ((target.x > currentNode.Position.x && target.x > currentNode.PreviousNode.Position.x) ||
+            (target.x < currentNode.Position.x && target.x < currentNode.PreviousNode.Position.x) ||
+            (target.y > currentNode.Position.y && target.y > currentNode.PreviousNode.Position.y) ||
+            (target.y < currentNode.Position.y && target.y < currentNode.PreviousNode.Position.y))
+            {
+                path.Add(currentNode.Position);
+            }
+        currentNode = currentNode.PreviousNode;
 
         while (currentNode.PreviousNode != null)
         {
             path.Add(currentNode.Position);
             currentNode = currentNode.PreviousNode;
         }
-        if (addStartingPosition)
-            path.Add(currentNode.Position);
+        path.Add(currentNode.Position);
 
         return path;
     }
@@ -88,23 +159,6 @@ public class PathFinder : MonoBehaviour
         neighbours.Add(new Node(node.G + 1, new Vector2(node.Position.x, node.Position.y - 1), node.TargetPosition, node));
         neighbours.Add(new Node(node.G + 1, new Vector2(node.Position.x, node.Position.y + 1), node.TargetPosition, node));
         return neighbours;
-    }
-
-    private void OnDrawGizmos()
-    {
-        if (checkedNodes == null)
-            return;
-        foreach (var item in checkedNodes)
-        {
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawSphere(new Vector2(item.Position.x, item.Position.y), 0.1f);
-        }
-        if (pathToTarget != null)
-            foreach (var item in pathToTarget)
-            {
-                Gizmos.color = Color.red;
-                Gizmos.DrawSphere(new Vector2(item.x, item.y), 0.2f);
-            }
     }
 }
 

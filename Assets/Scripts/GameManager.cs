@@ -17,6 +17,7 @@ public static class GameData
     public static int detonator;
     public static int mystery = 0;
     public static int hackFlame;
+    public static bool hackBomb;
     public static bool hackWallPass;
     public static bool hackFlamePass;
     public static bool hackBombPass;
@@ -48,7 +49,6 @@ public class GameManager : MonoBehaviour
     {
         Application.targetFrameRate = 60;
         GameManager.instance = this;
-        GetValueForGameData();
         listOfBrickPositions = new List<Vector2>();
         listOfPositions = new List<Vector2>();
         for (int i = -4; i <= 6; i++)
@@ -70,6 +70,8 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        GetValueForGameData();
+        GameData.hackBomb = false;
         for (int i = 1; i <= GameData.numberOfBombs; i++)
             BombSpawner.instance.AddBomb();
         UIManager.instance.SetControllerOpacity(PlayerPrefs.GetFloat("ControllerOpacity", 45) / 100);
@@ -96,6 +98,11 @@ public class GameManager : MonoBehaviour
     {
         GameData.speed = PlayerPrefs.GetFloat("Speed", 3.5f);
         GameData.numberOfBombs = PlayerPrefs.GetInt("NumberOfBombs", 1);
+        if (!GameData.hackBomb && GameData.numberOfBombs < BombSpawner.instance.Count()) {
+            BombSpawner.instance.RemoveLastBomb();
+        }
+        if (GameData.hackFlame == GameData.flame) 
+            GameData.hackFlame = PlayerPrefs.GetInt("Flame", 1);
         GameData.flame = PlayerPrefs.GetInt("Flame", 1);
         GameData.score = PlayerPrefs.GetInt("Score", 0);
         GameData.wallPass = PlayerPrefs.GetInt("WallPass", 0);
@@ -141,7 +148,6 @@ public class GameManager : MonoBehaviour
             yield break;
         }
 
-        // UIManager.instance.SetActiveButtonDetonator(GameData.detonator);
         UIManager.instance.SetValueStageAndLeft(PlayerPrefs.GetInt("Stage", 1), PlayerPrefs.GetInt("Left", 2));
         UIManager.instance.SetActiveStartingScene(true);
         BombSpawner.instance.ExplodeAllBombs();
@@ -182,7 +188,7 @@ public class GameManager : MonoBehaviour
             int index = GetIndexPositionOfEnemy();
             enemy.position = listOfPositionsCanFillEnemy[index];
             try {
-                listOfPositionsCanFillEnemy.RemoveRange(index, 5);
+                listOfPositionsCanFillEnemy.RemoveRange(index - 4, index + 4);
             }
             catch (Exception)
             {

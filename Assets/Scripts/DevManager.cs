@@ -75,6 +75,7 @@ public class DevManager : MonoBehaviour
     }
     public void HackBomb() {
         BombSpawner.instance.AddBomb();
+        GameData.hackBomb = true;
     }
     public void HackFlame() {
         GameData.hackFlame++;

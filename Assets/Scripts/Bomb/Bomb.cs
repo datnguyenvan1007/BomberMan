@@ -26,7 +26,7 @@ public class Bomb : MonoBehaviour
     public void Explode()
     {
         isExploded = true;
-        BombSpawner.instance.Destroy(gameObject);
+        BombSpawner.instance.Despawn(gameObject);
         AudioManager.instance.PlayAudioBoom();
         ExplosionSpawner.instance.Explode(transform);
         collider.isTrigger = true;

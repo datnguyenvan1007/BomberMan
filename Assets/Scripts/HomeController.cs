@@ -34,6 +34,9 @@ public class HomeController : MonoBehaviour
     [SerializeField] private GameObject btnContinue;
     [SerializeField] private GameObject prompt;
     private AudioSource audioSource;
+    private void Awake() {
+        Application.targetFrameRate = 60;
+    }
     void Start()
     {
         audioSource = GetComponent<AudioSource>();

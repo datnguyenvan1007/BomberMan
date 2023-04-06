@@ -85,7 +85,7 @@ public class ExplosionSpawner : MonoBehaviour
         }
         return null;
     }
-    public void Destroy(GameObject explosion)
+    public void Despawn(GameObject explosion)
     {
         explosion.transform.Rotate(0, 0, 360 - explosion.transform.eulerAngles.z);
         this.explosions.Add(explosion);

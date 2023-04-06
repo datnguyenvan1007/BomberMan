@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class BombSpawner : MonoBehaviour
 {
-    [SerializeField] private List<GameObject> bombs;
+    [SerializeField] private List<GameObject> bombs = new List<GameObject>();
     [SerializeField] private GameObject bombPrefab;
     private List<GameObject> waitingToExplode = new List<GameObject>();
     public static BombSpawner instance;
@@ -20,7 +20,7 @@ public class BombSpawner : MonoBehaviour
         bomb.transform.parent = transform;
         bomb.SetActive(false);
     }
-    public void Destroy(GameObject bomb)
+    public void Despawn(GameObject bomb)
     {
         this.bombs.Add(bomb);
         bomb.SetActive(false);
@@ -37,7 +37,7 @@ public class BombSpawner : MonoBehaviour
     }
     public bool Spawn(Vector3 position)
     {
-        if (Physics2D.OverlapCircle(position, 0.1f, LayerMask.GetMask("Brick", "Bomb")))
+        if (Physics2D.OverlapCircle(position, 0.1f, LayerMask.GetMask("Brick", "Bomb", "Enemy", "EnemyCanThrough")))
             return false;
         GameObject bomb = GetBombFromPool();
         if (bomb == null)
@@ -50,6 +50,13 @@ public class BombSpawner : MonoBehaviour
         bomb.transform.position = position;
         bomb.SetActive(true);
         return true;
+    }
+    public void RemoveLastBomb() {
+        bombs.RemoveAt(bombs.Count - 1);
+        Destroy(transform.GetChild(transform.childCount - 1).gameObject);
+    }
+    public int Count() {
+        return this.bombs.Count;
     }
     public void Detonate()
     {
@@ -64,7 +71,7 @@ public class BombSpawner : MonoBehaviour
         foreach (Transform bomb in gameObject.transform)
         {
             if (bomb.gameObject.activeSelf)
-                Destroy(bomb.gameObject);
+                Despawn(bomb.gameObject);
         }
         waitingToExplode.Clear();
     }

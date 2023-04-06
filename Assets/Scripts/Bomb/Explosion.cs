@@ -11,6 +11,6 @@ public class Explosion : MonoBehaviour
     private IEnumerator DestroyByTime()
     {
         yield return new WaitForSeconds(0.4f);
-        ExplosionSpawner.instance.Destroy(gameObject);
+        ExplosionSpawner.instance.Despawn(gameObject);
     }
 }

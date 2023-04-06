@@ -17,8 +17,6 @@ public class Enemy : MonoBehaviour
     protected List<int> distanceCanWalk = new List<int>();
     private RaycastHit2D hit;
     List<Vector2> directions = new List<Vector2>();
-    private int GoLeftHash = Animator.StringToHash("GoLeft");
-    private int GoRightHash = Animator.StringToHash("GoRight");
     private int MoveHash = Animator.StringToHash("Move");
 
     protected virtual void Start()
@@ -97,7 +95,7 @@ public class Enemy : MonoBehaviour
             transform.position = Vector2.MoveTowards(transform.position, nextPosition, speed * Time.fixedDeltaTime);
         }
     }
-    protected bool CheckBomb()
+    protected virtual bool CheckBomb()
     {
         if (!Player.hasJustPutBomb)
             return false;
@@ -110,22 +108,11 @@ public class Enemy : MonoBehaviour
         }
         return false;
     }
-    public void ReverseDirection()
-    {
-        SetAnimationOfMovement(direction * -1);
-        direction = -1 * direction;
-        nextPosition = new Vector2(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y));
-        nextPosition += direction;
-    }
 
     protected void SetAnimationOfMovement(Vector2 dir)
     {
         if (dir == direction || dir == Vector2.zero)
             return;
-        // if (dir == Vector2.up || dir == Vector2.left)
-        //     anim.Play(GoLeftHash);
-        // else
-        //     anim.Play(GoRightHash);
         anim.SetFloat(MoveHash, dir.x + dir.y);
     }
 

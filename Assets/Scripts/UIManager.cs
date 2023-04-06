@@ -138,14 +138,12 @@ public class UIManager : MonoBehaviour
         {
             soundOn.sprite = spritesOfButtonOn[1];
             soundOff.sprite = spritesOfButtonOff[0];
-            AudioManager.instance.UnMute();
             PlayerPrefs.SetInt("Sound", 1);
         }
         else
         {
             soundOn.sprite = spritesOfButtonOn[0];
             soundOff.sprite = spritesOfButtonOff[1];
-            AudioManager.instance.Mute();
             PlayerPrefs.SetInt("Sound", 0);
         }
     }
@@ -195,6 +193,8 @@ public class UIManager : MonoBehaviour
     {
         buttonContinue.sprite = spritesOfButtonContinue[0];
         Time.timeScale = 1;
+        if (PlayerPrefs.GetInt("Sound", 1) == 1) 
+            AudioManager.instance.UnMute();
     }
     public void OnPointerDownMainMenu()
     {

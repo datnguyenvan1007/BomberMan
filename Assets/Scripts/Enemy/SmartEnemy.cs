@@ -4,84 +4,154 @@ using UnityEngine;
 
 public class SmartEnemy : Enemy
 {
-    [Range(1, 2)]
-    [SerializeField] private int smart = 1;
-    private float limitedDistanceCanFindPlayer;
     private List<Vector2> pathToPlayer = new List<Vector2>();
-    private bool isMoving = false;
-    // private bool hasJustSwitchedToNormal = false;
+    public bool isMoving = false;
+    private Vector2 oldPositionOfPlayer;
     protected override void Start()
     {
         base.Start();
-        limitedDistanceCanFindPlayer = smart == 2 ? 6f : 2.5f;
     }
 
     protected override void FixedUpdate()
     {
         if (isDead)
             return;
-        ReadyAI();
-        AI();
-        if (pathToPlayer.Count == 0)
+        if (!isMoving || pathToPlayer.Count == 0)
         {
-            // if (hasJustSwitchedToNormal)
-            // {
-            //     nextPosition = new Vector2(Mathf.Round(transform.position.x), Mathf.Round(transform.position.y));
-            //     Vector2 dir = nextPosition - (Vector2)transform.position;
-            //     dir.Normalize();
-            //     SetAnimationOfMovement(dir);
-            //     hasJustSwitchedToNormal = false;
-            // }
             Move();
+        }
+        else
+        {
+            AI();
         }
     }
     void AI()
     {
-        if (!player.activeSelf || !isMoving)
+        FollowPlayerPosition();
+        if (pathToPlayer.Count == 0)
             return;
-        if (Vector2.Distance(transform.position, pathToPlayer[pathToPlayer.Count - 1]) > 0.0f)
+        if (Vector2.Distance(transform.position, pathToPlayer[0]) > 0.0f)
         {
             if (CheckBomb())
             {
-                isMoving = false;
-                return;
+                FindPath();
             }
-            transform.position = Vector2.MoveTowards(transform.position, pathToPlayer[pathToPlayer.Count - 1], speed * Time.fixedDeltaTime);
-            isMoving = true;
-        }
-        else
-        {
-            isMoving = false;
-        }
-    }
-    void ReadyAI()
-    {
-        if (!player.activeSelf)
-        {
-            pathToPlayer.Clear();
-            return;
-        }
-        if (!isMoving && Vector2.Distance(transform.position, player.transform.position) <= limitedDistanceCanFindPlayer)
-        {
-            pathToPlayer = PathFinder.GetPath(transform.position, player.transform.position, isThroughBrick);
-            if (pathToPlayer.Count > 0) {
-                isMoving = true;
+            else
+            {
+                nextPosition = pathToPlayer[0]; 
                 //set animation
-                Vector2 dir = pathToPlayer[pathToPlayer.Count - 1] - (Vector2)transform.position;
-                nextPosition = pathToPlayer[pathToPlayer.Count - 1];
+                Vector2 dir = pathToPlayer[0] - (Vector2)transform.position;
                 dir.Normalize();
                 SetAnimationOfMovement(dir);
                 direction = dir;
+                transform.position = Vector2.MoveTowards(transform.position, pathToPlayer[0], speed * Time.fixedDeltaTime);
             }
         }
-        if (Vector2.Distance(transform.position, player.transform.position) > limitedDistanceCanFindPlayer)
+        else
         {
-            // if (isMoving)
-            // {
-            //     hasJustSwitchedToNormal = true;
-            // }
+            pathToPlayer.RemoveAt(0);
+        }
+    }
+    protected override bool CheckBomb()
+    {
+        if (!Player.hasJustPutBomb)
+            return false;
+        Vector2 bombPosition = new Vector2(Mathf.RoundToInt(player.transform.position.x), Mathf.RoundToInt(player.transform.position.y));
+        if (pathToPlayer.IndexOf(bombPosition) != -1) {
+            if (pathToPlayer.IndexOf(bombPosition) == 0)
+                nextPosition = nextPosition - direction;
+            Player.hasJustPutBomb = false;
             pathToPlayer.Clear();
+            return true;
+        }
+        return false;
+    }
+    // void ReadyAI()
+    // {
+    //     // if (!player.activeSelf)
+    //     // {
+    //     //     pathToPlayer.Clear();
+    //     //     return;
+    //     // }
+    //     if (!isMoving && Vector2.Distance(transform.position, player.transform.position) <= limitedDistanceCanFindPlayer)
+    //     {
+    //         pathToPlayer = PathFinder.GetPath(player.transform.position, transform.position, isThroughBrick);
+    //         if (pathToPlayer.Count > 0)
+    //         {
+    //             isMoving = true;
+    //             //set animation
+    //             Vector2 dir = pathToPlayer[0] - (Vector2)transform.position;
+    //             nextPosition = pathToPlayer[0];
+    //             dir.Normalize();
+    //             SetAnimationOfMovement(dir);
+    //             direction = dir;
+    //         }
+    //     }
+    //     if (Vector2.Distance(transform.position, player.transform.position) > limitedDistanceCanFindPlayer)
+    //     {
+    //         pathToPlayer.Clear();
+    //         isMoving = false;
+    //     }
+    // }
+    public void FindPath()
+    {
+        if (pathToPlayer.Count > 0)
+            return;
+        pathToPlayer = PathFinder.GetPath(player.transform.position, transform.position, isThroughBrick);
+        if (pathToPlayer.Count > 0)
+        {
+            isMoving = true;
+            oldPositionOfPlayer = pathToPlayer[pathToPlayer.Count - 1];
+        }
+        else {
             isMoving = false;
         }
+    }
+    public void FollowPlayerPosition()
+    {
+        if (Mathf.Abs(oldPositionOfPlayer.x - player.transform.position.x) >= 0.5f ||
+        Mathf.Abs(oldPositionOfPlayer.y - player.transform.position.y) >= 0.5f)
+        {
+            if (player.transform.position.x - oldPositionOfPlayer.x >= 0.5f)
+                oldPositionOfPlayer.x = oldPositionOfPlayer.x + 1;
+            if (player.transform.position.x - oldPositionOfPlayer.x >= -0.5f)
+                oldPositionOfPlayer.x = oldPositionOfPlayer.x - 1;
+            if (player.transform.position.y - oldPositionOfPlayer.y >= 0.5f)
+                oldPositionOfPlayer.y = oldPositionOfPlayer.y + 1;
+            if (player.transform.position.y - oldPositionOfPlayer.y >= -0.5f)
+                oldPositionOfPlayer.y = oldPositionOfPlayer.y - 1;
+            if (pathToPlayer.IndexOf(oldPositionOfPlayer) == -1)
+            {
+                if (CanWalk(oldPositionOfPlayer))
+                    pathToPlayer.Add(oldPositionOfPlayer);
+                else
+                {
+                    pathToPlayer.Clear();
+                    isMoving = false;
+                }
+            }
+            else
+            {
+                pathToPlayer.RemoveAt(pathToPlayer.Count - 1);
+            }
+        }
+    }
+    public bool CanWalk(Vector2 pos)
+    {
+        if (isThroughBrick)
+        {
+            return !Physics2D.OverlapCircle(pos, 0.1f, LayerMask.GetMask("Wall", "Bomb"));
+        }
+        else
+        {
+            return !Physics2D.OverlapCircle(pos, 0.1f, LayerMask.GetMask("Wall", "Bomb", "Brick"));
+        }
+    }
+    public void ClearPath()
+    {
+        pathToPlayer.Clear();
+    }
+    public Vector2 GetPlayerPosition() {
+        return player.transform.position;
     }
 }
