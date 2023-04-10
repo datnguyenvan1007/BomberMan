@@ -29,7 +29,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject levelObject;
     [SerializeField] private GameObject timeOut;
     [SerializeField] private GameObject player;
-    [SerializeField] private GameObject exitGate;
+    [SerializeField] private GameObject exitWay;
     [SerializeField] private List<GameObject> mapsPrefab;
     [SerializeField] private List<GameObject> enemiesAndItemPrefab;
     private GameObject mapOfCurrentLevel;
@@ -55,7 +55,7 @@ public class GameManager : MonoBehaviour
         {
             for (int j = -12; j <= 22; j++)
             {
-                if (i >= 3 && j <= -6)
+                if (i >= 2 && j <= -6)
                     continue;
                 if (i % 2 == 0)
                     listOfPositions.Add(new Vector2(j, i));
@@ -84,14 +84,7 @@ public class GameManager : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (isPlayingLevel)
-        {
-            SetTimeGame();
-            if (!isActivedExitGate)
-                StartCoroutine(CanActiveExitGate());
-            if (!isActiveItem && item)
-                StartCoroutine(CanActiveItems());
-        }
+        SetTimeGame();
     }
 
     void GetValueForGameData()
@@ -176,8 +169,8 @@ public class GameManager : MonoBehaviour
         }
         enemiesAndItemOfCurrentLevel = Instantiate(enemiesAndItemPrefab[PlayerPrefs.GetInt("Stage", 1) - 1], levelObject.transform);
         ArrangeEnemies();
-        HideExitGate(ref index);
-        HideItem(index);
+        ArrangeExitGate(ref index);
+        ArrangeItem(index);
     }
     void ArrangeEnemies()
     {
@@ -200,31 +193,29 @@ public class GameManager : MonoBehaviour
     {
         return UnityEngine.Random.Range(0, listOfPositionsCanFillEnemy.Count);
     }
-    void HideExitGate(ref int index)
+    void ArrangeExitGate(ref int index)
     {
         index = UnityEngine.Random.Range(0, listOfBrickPositions.Count);
-        exitGate.transform.position = listOfBrickPositions[index];
-        RaycastHit2D hit = Physics2D.Raycast(exitGate.transform.position, Vector3.forward, 0.5f, LayerMask.GetMask("Brick"));
-        brickOverExitGate = hit.collider.gameObject;
-        exitGate.SetActive(false);
-        isActivedExitGate = false;
+        exitWay.transform.position = listOfBrickPositions[index];
+        RaycastHit2D hit = Physics2D.Raycast(exitWay.transform.position, Vector3.forward, 0.5f, LayerMask.GetMask("Brick"));
+        hit.collider.GetComponent<Brick>().SetObjectCovered(exitWay);
     }
-    void HideItem(int indexOfExitGate)
+    void ArrangeItem(int indexOfExitWay)
     {
         int index;
         item = enemiesAndItemOfCurrentLevel.transform.GetChild(1).gameObject;
         do
         {
             index = UnityEngine.Random.Range(0, listOfBrickPositions.Count);
-        } while (index == indexOfExitGate);
+        } while (index == indexOfExitWay);
         item.transform.position = listOfBrickPositions[index];
         RaycastHit2D hit = Physics2D.Raycast(item.transform.position, Vector3.forward, 0.5f, LayerMask.GetMask("Brick"));
-        brickOverItem = hit.collider.gameObject;
-        item.SetActive(false);
-        isActiveItem = false;
+        hit.collider.GetComponent<Brick>().SetObjectCovered(item);
     }
     void SetTimeGame()
     {
+        if (!isPlayingLevel)
+            return;
         if (timeRemain <= 0)
             return;
         if (timeRemain <= 0.1f && !timeOut.activeSelf)
@@ -237,26 +228,6 @@ public class GameManager : MonoBehaviour
         }
         timeRemain -= Time.fixedDeltaTime;
         UIManager.instance.SetTimeGame(timeRemain);
-    }
-    IEnumerator CanActiveExitGate()
-    {
-        if (!brickOverExitGate.activeSelf)
-        {
-            exitGate.SetActive(true);
-            yield return new WaitForSeconds(0.5f);
-            exitGate.GetComponent<Collider2D>().enabled = true;
-            isActivedExitGate = true;
-        }
-    }
-    IEnumerator CanActiveItems()
-    {
-        if (!brickOverItem.activeSelf)
-        {
-            item.SetActive(true);
-            yield return new WaitForSeconds(0.5f);
-            item.GetComponent<Collider2D>().enabled = true;
-            isActiveItem = true;
-        }
     }
     private void TimeOut(bool isActive)
     {

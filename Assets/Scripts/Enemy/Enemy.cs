@@ -18,6 +18,7 @@ public class Enemy : MonoBehaviour
     private RaycastHit2D hit;
     List<Vector2> directions = new List<Vector2>();
     private int MoveHash = Animator.StringToHash("Move");
+    private bool isStart;
 
     protected virtual void Start()
     {
@@ -25,34 +26,27 @@ public class Enemy : MonoBehaviour
         anim = GetComponent<Animator>();
         collider = GetComponent<Collider2D>();
         nextPosition = transform.position;
-        oldPosition = transform.position;
+        oldPosition = transform.position;    
+        isStart = true;    
     }
 
     protected virtual void FixedUpdate()
     {
-        if (isDead)
-            return;
         Move();
     }
     protected Vector2 GetNextPosition()
     {
         oldPosition = new Vector2(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y));
-        //oldPosition = transform.position;
         nextPosition = oldPosition;
         limitedDistance = Random.Range(1, 6);
-        string[] layerMask;
-        if (!isThroughBrick)
-            layerMask = new string[] { "Wall", "Brick", "Bomb" };
-        else
-        {
-            layerMask = new string[] { "Wall", "Bomb" };
-        }
+
         directions.Clear();
         distanceCanWalk.Clear();
-        CheckDirection(Vector2.up, limitedDistance, layerMask);
-        CheckDirection(Vector2.down, limitedDistance, layerMask);
-        CheckDirection(Vector2.right, limitedDistance, layerMask);
-        CheckDirection(Vector2.left, limitedDistance, layerMask);
+        CheckDirection(Vector2.up, limitedDistance);
+        CheckDirection(Vector2.down, limitedDistance);
+        CheckDirection(Vector2.right, limitedDistance);
+        CheckDirection(Vector2.left, limitedDistance);
+        isStart = false;
 
         if (directions.Count > 0)
         {
@@ -64,16 +58,26 @@ public class Enemy : MonoBehaviour
         }
         return nextPosition;
     }
-    private void CheckDirection(Vector2 direction, int distance, string[] layerMask)
+    private void CheckDirection(Vector2 direction, int distance)
     {
-        hit = Physics2D.Raycast(oldPosition, direction, distance, LayerMask.GetMask(layerMask));
+        if (!isThroughBrick)
+            if (isStart) {
+                hit = Physics2D.Raycast(oldPosition, direction, distance, LayerMask.GetMask("Wall", "Brick", "Bomb"));
+            }
+            else
+                hit = Physics2D.Raycast(oldPosition, direction, distance, LayerMask.GetMask("Wall", "Brick", "Bomb", "Items"));
+        else
+        {
+            hit = Physics2D.Raycast(oldPosition, direction, distance, LayerMask.GetMask("Wall", "Bomb"));
+        }
+        
         if (hit.collider)
         {
-            if (Mathf.RoundToInt(hit.distance) == 0)
+            if (Mathf.FloorToInt(hit.distance) == 0)
                 return;
             else
             {
-                distanceCanWalk.Add(Mathf.RoundToInt(hit.distance));
+                distanceCanWalk.Add(Mathf.FloorToInt(hit.distance));
                 directions.Add(direction);
             }
         }
@@ -87,26 +91,23 @@ public class Enemy : MonoBehaviour
     {
         if (isDead)
             return;
-        if (nextPosition == (Vector2)transform.position) {
+        if (nextPosition == (Vector2)transform.position)
+        {
             nextPosition = GetNextPosition();
-        } 
-        else {
-            CheckBomb();
+        }
+        else
+        {
             transform.position = Vector2.MoveTowards(transform.position, nextPosition, speed * Time.fixedDeltaTime);
         }
     }
-    protected virtual bool CheckBomb()
+    public virtual void CheckImpediment(string impediment)
     {
-        if (!Player.hasJustPutBomb)
-            return false;
         float distanceToNextPosition = Vector2.Distance(transform.position, nextPosition);
-        RaycastHit2D h = Physics2D.Raycast(transform.position, direction, distanceToNextPosition, LayerMask.GetMask("Bomb"));
-        if (h.collider) {
+        RaycastHit2D h = Physics2D.Raycast(transform.position, direction, distanceToNextPosition, LayerMask.GetMask(impediment));
+        if (h.collider)
+        {
             nextPosition = new Vector2(Mathf.RoundToInt(player.transform.position.x), Mathf.RoundToInt(player.transform.position.y)) - direction;
-            Player.hasJustPutBomb = false;
-            return true;
         }
-        return false;
     }
 
     protected void SetAnimationOfMovement(Vector2 dir)
@@ -136,6 +137,7 @@ public class Enemy : MonoBehaviour
     {
         direction = Vector2.zero;
         isDead = false;
+        isStart = true;
         oldPosition = transform.position;
         nextPosition = transform.position;
     }

@@ -32,39 +32,32 @@ public class SmartEnemy : Enemy
             return;
         if (Vector2.Distance(transform.position, pathToPlayer[0]) > 0.0f)
         {
-            if (CheckBomb())
-            {
-                FindPath();
-            }
-            else
-            {
-                nextPosition = pathToPlayer[0]; 
-                //set animation
-                Vector2 dir = pathToPlayer[0] - (Vector2)transform.position;
-                dir.Normalize();
-                SetAnimationOfMovement(dir);
-                direction = dir;
-                transform.position = Vector2.MoveTowards(transform.position, pathToPlayer[0], speed * Time.fixedDeltaTime);
-            }
+            nextPosition = pathToPlayer[0]; 
+            //set animation
+            Vector2 dir = nextPosition - (Vector2)transform.position;
+            dir.Normalize();
+            SetAnimationOfMovement(dir);
+            direction = dir;
+            transform.position = Vector2.MoveTowards(transform.position, nextPosition, speed * Time.fixedDeltaTime);
         }
         else
         {
             pathToPlayer.RemoveAt(0);
         }
     }
-    protected override bool CheckBomb()
+    public override void CheckImpediment(string impediment)
     {
-        if (!Player.hasJustPutBomb)
-            return false;
+        if (pathToPlayer.Count == 0) {
+            base.CheckImpediment(impediment);
+            return;
+        }
         Vector2 bombPosition = new Vector2(Mathf.RoundToInt(player.transform.position.x), Mathf.RoundToInt(player.transform.position.y));
         if (pathToPlayer.IndexOf(bombPosition) != -1) {
             if (pathToPlayer.IndexOf(bombPosition) == 0)
                 nextPosition = nextPosition - direction;
-            Player.hasJustPutBomb = false;
             pathToPlayer.Clear();
-            return true;
+            FindPath();
         }
-        return false;
     }
     // void ReadyAI()
     // {

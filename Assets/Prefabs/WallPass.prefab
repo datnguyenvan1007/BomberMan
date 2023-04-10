@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8698325472862798487}
   - component: {fileID: 4209752439735132009}
   - component: {fileID: 7422832720992086469}
+  - component: {fileID: 7347585097539453609}
   m_Layer: 12
   m_Name: WallPass
   m_TagString: Items
@@ -111,3 +112,16 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.44642037, y: 0.4332738}
   m_EdgeRadius: 0
+--- !u!114 &7347585097539453609
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4585060462579953902}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f201b5611a913e84ba8354bf5913829a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemy: {fileID: 2272818584612048178, guid: 4b90a7909a3a3de4dae35edddb8bd231, type: 3}

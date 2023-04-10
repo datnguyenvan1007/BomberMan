@@ -22,7 +22,6 @@ public class Radar : MonoBehaviour
         if (other.tag == "Player") {
             isEntered = false;
             enemy.FindPath();
-            // playerPosition = enemy.GetPlayerPosition();
         }
     }
     private void OnTriggerExit2D(Collider2D other) {

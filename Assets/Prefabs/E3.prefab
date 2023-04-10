@@ -139,7 +139,6 @@ MonoBehaviour:
   speed: 1.5
   score: 2000
   isThroughBrick: 1
-  smart: 1
   isMoving: 0
 --- !u!1 &8694883614199517354
 GameObject:
@@ -189,7 +188,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 1.16
+  m_Radius: 0.7
 --- !u!114 &8502859560610125125
 MonoBehaviour:
   m_ObjectHideFlags: 0

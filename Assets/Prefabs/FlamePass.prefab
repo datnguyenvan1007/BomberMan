@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8523697505776042056}
   - component: {fileID: 2081928873944042888}
   - component: {fileID: 7454464343264945973}
+  - component: {fileID: 2956908105078171847}
   m_Layer: 12
   m_Name: FlamePass
   m_TagString: Items
@@ -111,3 +112,16 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.44642037, y: 0.4332738}
   m_EdgeRadius: 0
+--- !u!114 &2956908105078171847
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6150689699758162649}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f201b5611a913e84ba8354bf5913829a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemy: {fileID: 2272818584612048178, guid: 4b90a7909a3a3de4dae35edddb8bd231, type: 3}

@@ -8,8 +8,6 @@ public class PathFinder : MonoBehaviour
     static List<Vector2> pathToTarget;
     static List<Node> checkedNodes;
     static List<Node> waitingNodes;
-    // static bool addStartingPosition = false;
-    // static bool isEqualTarget = false;
     static Node nodeToCheck;
 
     // public static List<Vector2> GetPath(Vector2 start, Vector2 target, bool isThroughBrick)
@@ -78,11 +76,10 @@ public class PathFinder : MonoBehaviour
 
         Vector2 startPosition = new Vector2(Mathf.Round(start.x), Mathf.Round(start.y));
         Vector2 targetPosition = new Vector2(Mathf.Round(target.x), Mathf.Round(target.y));
-        // isEqualTarget = targetPosition.Equals(target);
 
         if (startPosition == targetPosition)
             return pathToTarget;
-        if (!isThroughBrick && Physics2D.OverlapCircle(startPosition, 0.1f, LayerMask.GetMask("Brick")))
+        if (!isThroughBrick && Physics2D.OverlapCircle(startPosition, 0.1f, LayerMask.GetMask("Brick", "Items")))
             return pathToTarget;
         if (Physics2D.OverlapCircle(startPosition, 0.1f, LayerMask.GetMask("Bomb")))
         {
@@ -109,7 +106,7 @@ public class PathFinder : MonoBehaviour
             }
             else
             {
-                walkable = !Physics2D.OverlapCircle(nodeToCheck.Position, 0.1f, LayerMask.GetMask("Wall", "Bomb", "Brick"));
+                walkable = !Physics2D.OverlapCircle(nodeToCheck.Position, 0.1f, LayerMask.GetMask("Wall", "Bomb", "Brick", "Items"));
             }
             if (!walkable)
             {
@@ -133,6 +130,7 @@ public class PathFinder : MonoBehaviour
     {
         var path = new List<Vector2>();
         Node currentNode = node;
+        //Neu target nam ngoai khoang 2 diem thi them diem bat dau.
         if ((target.x > currentNode.Position.x && target.x > currentNode.PreviousNode.Position.x) ||
             (target.x < currentNode.Position.x && target.x < currentNode.PreviousNode.Position.x) ||
             (target.y > currentNode.Position.y && target.y > currentNode.PreviousNode.Position.y) ||

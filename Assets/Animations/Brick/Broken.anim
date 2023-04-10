@@ -21,15 +21,15 @@ AnimationClip:
   - curve:
     - time: 0
       value: {fileID: -93092072, guid: 8815bdf40c882d2498bd94a6c0d460ce, type: 3}
-    - time: 0.11666667
+    - time: 0.1
       value: {fileID: 1361489591, guid: 8815bdf40c882d2498bd94a6c0d460ce, type: 3}
-    - time: 0.23333333
+    - time: 0.2
       value: {fileID: 2142161854, guid: 8815bdf40c882d2498bd94a6c0d460ce, type: 3}
-    - time: 0.35
+    - time: 0.3
       value: {fileID: 765821728, guid: 8815bdf40c882d2498bd94a6c0d460ce, type: 3}
-    - time: 0.46666667
+    - time: 0.4
       value: {fileID: 923885311, guid: 8815bdf40c882d2498bd94a6c0d460ce, type: 3}
-    - time: 0.5833333
+    - time: 0.5
       value: {fileID: -1694972329, guid: 8815bdf40c882d2498bd94a6c0d460ce, type: 3}
     attribute: m_Sprite
     path: 
@@ -61,7 +61,7 @@ AnimationClip:
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 0.59999996
+    m_StopTime: 0.51666665
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0

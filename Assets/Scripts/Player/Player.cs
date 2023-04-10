@@ -1,7 +1,5 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class Player : MonoBehaviour
 {
@@ -14,9 +12,9 @@ public class Player : MonoBehaviour
     public static bool isCompleted = false;
     private float time = 0f;
     private Vector2 startingPlayerPosition;
-    private Vector2 moveVector = Vector2.zero;
+    private Vector2 moveDPad = Vector2.zero;
+    private Vector2 moveJoystick = Vector2.zero;
     private bool isQuitBomb = true;
-    public static bool hasJustPutBomb = false;
     private int MoveXHash = Animator.StringToHash("MoveX");
     private int MoveYHash = Animator.StringToHash("MoveY");
     private int StartHash = Animator.StringToHash("Start");
@@ -33,8 +31,8 @@ public class Player : MonoBehaviour
     }
     void FixedUpdate()
     {
-        // moveVector.x = Input.GetAxisRaw("Horizontal");
-        // moveVector.y = Input.GetAxisRaw("Vertical");
+        // moveDPad.x = Input.GetAxisRaw("Horizontal");
+        // moveDPad.y = Input.GetAxisRaw("Vertical");
         Move();
     }
     private void Move()
@@ -45,7 +43,8 @@ public class Player : MonoBehaviour
             animator.SetFloat(MoveXHash, 0f);
             return;
         }
-        if (moveVector == Vector2.zero && joystick.Direction == Vector2.zero)
+        moveJoystick = GetJoystick();
+        if (moveDPad == Vector2.zero && moveJoystick == Vector2.zero)
         {
             animator.speed = 0;
             time = timeDelay;
@@ -54,20 +53,20 @@ public class Player : MonoBehaviour
         {
             animator.speed = 1;
             time += Time.fixedDeltaTime;
-            if (moveVector.y == 0 && joystick.Direction.y == 0)
+            if (moveDPad.y == 0 && moveJoystick.y == 0)
             {
-                animator.SetFloat(MoveXHash, moveVector.x + joystick.Direction.x);
-                animator.SetFloat(MoveYHash, moveVector.y + joystick.Direction.y);
+                animator.SetFloat(MoveXHash, moveDPad.x + moveJoystick.x);
+                animator.SetFloat(MoveYHash, moveDPad.y + moveJoystick.y);
                 if (time >= timeDelay)
                 {
                     AudioManager.instance.PlayAudioLeftRight();
                     time = 0f;
                 }
             }
-            if (moveVector.x == 0 && joystick.Direction.x == 0)
+            if (moveDPad.x == 0 && moveJoystick.x == 0)
             {
-                animator.SetFloat(MoveXHash, moveVector.x + joystick.Direction.x);
-                animator.SetFloat(MoveYHash, moveVector.y + joystick.Direction.y);
+                animator.SetFloat(MoveXHash, moveDPad.x + moveJoystick.x);
+                animator.SetFloat(MoveYHash, moveDPad.y + moveJoystick.y);
                 if (time >= timeDelay)
                 {
                     AudioManager.instance.PlayAudioUpDown();
@@ -75,7 +74,28 @@ public class Player : MonoBehaviour
                 }
             }
         }
-        rig.velocity = (moveVector + joystick.Direction) * GameData.speed;
+        rig.velocity = (moveDPad + moveJoystick) * GameData.speed;
+    }
+    private Vector2 GetJoystick()
+    {
+        if (!UIManager.instance.GetActiveJoystick())
+            return Vector2.zero;
+        Vector2 direction = joystick.Direction;
+        if (direction.x >= 0.5f)
+            direction.x = 1;
+        else if (direction.x <= -0.5f)
+            direction.x = -1;
+        else
+            direction.x = 0;
+        if (direction.y >= 0.5f)
+            direction.y = 1;
+        else if (direction.y <= -0.5f)
+            direction.y = -1;
+        else
+            direction.y = 0;
+        if (direction.x != 0 && direction.y != 0)
+            direction.x = 0;
+        return direction;
     }
     public void PutBomb()
     {
@@ -84,8 +104,11 @@ public class Player : MonoBehaviour
         Vector3 pos = new Vector3(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y), 0);
         if (BombSpawner.instance.Spawn(pos))
         {
-            hasJustPutBomb = true;
             isQuitBomb = false;
+            Collider2D[] colliders = Physics2D.OverlapCircleAll(pos, 3, LayerMask.GetMask("Enemy", "EnemyCanThrough"));
+            foreach (Collider2D col in colliders) {
+                col.GetComponent<Enemy>().CheckImpediment("Bomb");
+            }
         }
     }
     public void Detonate()
@@ -113,7 +136,7 @@ public class Player : MonoBehaviour
     {
         gameObject.SetActive(false);
         GameManager.instance.Lose();
-        moveVector = Vector2.zero;
+        moveDPad = Vector2.zero;
     }
     private void OnEnable()
     {
@@ -124,19 +147,19 @@ public class Player : MonoBehaviour
 
     public void OnMoveExit()
     {
-        moveVector = Vector2.zero;
+        moveDPad = Vector2.zero;
     }
     public void OnMoveXEnter(int x)
     {
         if (isCompleted || isDead)
             return;
-        moveVector = new Vector2(x, 0);
+        moveDPad = new Vector2(x, 0);
     }
     public void OnMoveYEnter(int y)
     {
         if (isCompleted || isDead)
             return;
-        moveVector = new Vector2(0, y);
+        moveDPad = new Vector2(0, y);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -160,11 +183,11 @@ public class Player : MonoBehaviour
     }
     private void OnTriggerStay2D(Collider2D collision)
     {
-        if (collision.gameObject.tag == "ExitGate" && PoolEnemy.instance.enemyAlive == 0)
+        if (collision.gameObject.tag == "ExitWay" && PoolEnemy.instance.enemyAlive == 0)
         {
             if (isCompleted)
                 return;
-            moveVector = Vector2.zero;
+            moveDPad = Vector2.zero;
             isCompleted = true;
             rig.velocity = Vector2.zero;
             animator.Play(StartHash);
@@ -182,8 +205,6 @@ public class Player : MonoBehaviour
         if (collision.gameObject.tag == "Bomb")
         {
             isQuitBomb = true;
-            if (hasJustPutBomb)
-                hasJustPutBomb = false;
         }
 
     }

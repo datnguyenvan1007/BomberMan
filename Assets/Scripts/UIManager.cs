@@ -222,4 +222,7 @@ public class UIManager : MonoBehaviour
     {
         buttonNoOfPromptPanel.sprite = spritesOfButtonNo[0];
     }
+    public bool GetActiveJoystick() {
+        return joystickControl.activeSelf;
+    }
 }
