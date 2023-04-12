@@ -14,6 +14,7 @@ public class Player : MonoBehaviour
     private Vector2 startingPlayerPosition;
     private Vector2 moveDPad = Vector2.zero;
     private Vector2 moveJoystick = Vector2.zero;
+    private Vector2 move = Vector2.zero;
     private bool isQuitBomb = true;
     private int MoveXHash = Animator.StringToHash("MoveX");
     private int MoveYHash = Animator.StringToHash("MoveY");
@@ -31,8 +32,8 @@ public class Player : MonoBehaviour
     }
     void FixedUpdate()
     {
-        // moveDPad.x = Input.GetAxisRaw("Horizontal");
-        // moveDPad.y = Input.GetAxisRaw("Vertical");
+        moveDPad.x = Input.GetAxisRaw("Horizontal");
+        moveDPad.y = Input.GetAxisRaw("Vertical");
         Move();
     }
     private void Move()
@@ -44,7 +45,8 @@ public class Player : MonoBehaviour
             return;
         }
         moveJoystick = GetJoystick();
-        if (moveDPad == Vector2.zero && moveJoystick == Vector2.zero)
+        move = moveDPad + moveJoystick;
+        if (move == Vector2.zero)
         {
             animator.speed = 0;
             time = timeDelay;
@@ -53,25 +55,15 @@ public class Player : MonoBehaviour
         {
             animator.speed = 1;
             time += Time.fixedDeltaTime;
-            if (moveDPad.y == 0 && moveJoystick.y == 0)
+            animator.SetFloat(MoveXHash, move.x);
+            animator.SetFloat(MoveYHash, move.y);
+            if (time >= timeDelay)
             {
-                animator.SetFloat(MoveXHash, moveDPad.x + moveJoystick.x);
-                animator.SetFloat(MoveYHash, moveDPad.y + moveJoystick.y);
-                if (time >= timeDelay)
-                {
-                    AudioManager.instance.PlayAudioLeftRight();
-                    time = 0f;
-                }
-            }
-            if (moveDPad.x == 0 && moveJoystick.x == 0)
-            {
-                animator.SetFloat(MoveXHash, moveDPad.x + moveJoystick.x);
-                animator.SetFloat(MoveYHash, moveDPad.y + moveJoystick.y);
-                if (time >= timeDelay)
-                {
+                if (move.x == 0)
                     AudioManager.instance.PlayAudioUpDown();
-                    time = 0f;
-                }
+                else if (move.y == 0)
+                    AudioManager.instance.PlayAudioLeftRight();
+                time = 0f;
             }
         }
         rig.velocity = (moveDPad + moveJoystick) * GameData.speed;
@@ -102,11 +94,12 @@ public class Player : MonoBehaviour
         if (isDead || isCompleted)
             return;
         Vector3 pos = new Vector3(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y), 0);
-        if (BombSpawner.instance.Spawn(pos))
+        if (PoolBomb.instance.Spawn(pos))
         {
             isQuitBomb = false;
-            Collider2D[] colliders = Physics2D.OverlapCircleAll(pos, 3, LayerMask.GetMask("Enemy", "EnemyCanThrough"));
-            foreach (Collider2D col in colliders) {
+            Collider2D[] colliders = Physics2D.OverlapCircleAll(pos, 3.5f, LayerMask.GetMask("Enemy", "EnemyCanThrough"));
+            foreach (Collider2D col in colliders)
+            {
                 col.GetComponent<Enemy>().CheckImpediment("Bomb");
             }
         }
@@ -117,7 +110,7 @@ public class Player : MonoBehaviour
             return;
         if (GameData.detonator == 1 || GameData.hackDetonator)
         {
-            BombSpawner.instance.Detonate();
+            PoolBomb.instance.Detonate();
         }
     }
     public void Die()
@@ -127,6 +120,7 @@ public class Player : MonoBehaviour
         DevManager.instance.SetInteractableForButtonNextLevel(false);
         isDead = true;
         rig.velocity = Vector2.zero;
+        AudioManager.instance.Stop();
         AudioManager.instance.PlayAudioJustDied();
         animator.enabled = true;
         animator.Play(DieHash);
@@ -187,18 +181,18 @@ public class Player : MonoBehaviour
         {
             if (isCompleted)
                 return;
-            moveDPad = Vector2.zero;
             isCompleted = true;
+            moveDPad = Vector2.zero;
             rig.velocity = Vector2.zero;
-            animator.Play(StartHash);
             animator.speed = 0;
+            animator.Play(StartHash);
             AudioManager.instance.Stop();
             transform.position = collision.transform.position;
+            AudioManager.instance.Stop();
             AudioManager.instance.PlayAudioLevelComplete();
             DevManager.instance.SetInteractableForButtonNextLevel(false);
             StartCoroutine(GameManager.instance.WinLevel());
         }
-
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
@@ -206,14 +200,13 @@ public class Player : MonoBehaviour
         {
             isQuitBomb = true;
         }
-
     }
     private IEnumerator GetItems(Collider2D collision)
     {
         switch (collision.name)
         {
             case "Bombs":
-                BombSpawner.instance.AddBomb();
+                PoolBomb.instance.AddBomb();
                 GameData.numberOfBombs++;
                 break;
             case "Flames":
@@ -225,14 +218,14 @@ public class Player : MonoBehaviour
                 break;
             case "BombPass":
                 GameData.bombPass = 1;
-                BombSpawner.instance.SetTriggerForBomb(true);
+                PoolBomb.instance.SetTriggerForBomb(true);
                 break;
             case "FlamePass":
                 GameData.flamePass = 1;
                 break;
             case "WallPass":
                 GameData.wallPass = 1;
-                GameManager.instance.SetTriggerAllBricks(true);
+                PoolBrick.instance.SetTriggerAllBricks(true);
                 break;
             case "Mystery":
                 GameData.mystery = 1;

@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class Items : MonoBehaviour
 {
-    [SerializeField] private GameObject enemy;
+    [SerializeField] private List<GameObject> enemysPrefab;
     private new Collider2D collider;
+    int index;
     private void Start()
     {
         collider = GetComponent<Collider2D>();
@@ -22,25 +23,22 @@ public class Items : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         for (int i = 1; i <= 4; i++)
         {
-            PoolEnemy.instance.Spawn(enemy, transform.position);
+            index = Random.Range(0, enemysPrefab.Count);
+            PoolEnemy.instance.Spawn(enemysPrefab[index], transform.position);
         }
         if (gameObject.tag == "Items")
             gameObject.SetActive(false);
     }
-
-    public void ActiveCollider()
+    public void Appear()
     {
-        StartCoroutine(ActiveColliderDelay());
-    }
-
-    private IEnumerator ActiveColliderDelay()
-    {
-        yield return new WaitForSeconds(0.5f);
         collider.enabled = true;
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 3, LayerMask.GetMask("Enemy"));
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 3.5f, LayerMask.GetMask("Enemy"));
         foreach (Collider2D col in colliders)
         {
             col.GetComponent<Enemy>().CheckImpediment("Items");
         }
+    }
+    public void Hide() {
+        collider.enabled = false;
     }
 }

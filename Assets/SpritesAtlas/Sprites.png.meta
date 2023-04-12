@@ -105,7 +105,7 @@ TextureImporter:
     buildTarget: Android
     maxTextureSize: 2048
     resizeAlgorithm: 0
-    textureFormat: 65
+    textureFormat: 29
     textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
@@ -3530,9 +3530,8 @@ TextureImporter:
     secondaryTextures: []
     nameFileIdTable:
       e4_5: -1661192584
-      no1_2: 1147083777
-      e7_2: 994131149
-      e3_0: -1604883784
+      btn_flipcontroller3: -784422523
+      Progress will be lost.: -47239999
       item_2: -1698078381
       e2_6: 1964158903
       Are you sure _: 1616438200
@@ -3551,6 +3550,7 @@ TextureImporter:
       e7_5: 1968732804
       Controller_type: 1938858149
       nhanvat1_12: -1352571499
+      e1_5: -815191674
       e6_5: -1356461629
       e2_7: 170328196
       e6_4: -91462493
@@ -3561,7 +3561,7 @@ TextureImporter:
       nhanvat1_9: -1735702843
       e3_2: -867281535
       e3_1: 1020105484
-      nhanvat1_18: 1963301586
+      e7_2: 994131149
       nhanvat1_13: 1858129268
       e5_4: 1378066321
       e5_1: -301499795
@@ -3607,8 +3607,8 @@ TextureImporter:
       btn_dpad4: 169422591
       btn_on2: -1882664670
       e6_2: -1987629829
-      e3_5: 2102243132
       no3_0: -2026313887
+      e3_5: 2102243132
       e5_3: -1428280546
       btn_setting2: 392524077
       btn_yes1: 454848458
@@ -3675,22 +3675,22 @@ TextureImporter:
       btn_on1 #1058: 1312544304
       bomb1: -516780349
       cong_thoat: 704955223
+      e2_3: 1246921252
+      e6_3: 1105572865
+      e8_2: -1186185104
+      e4_3: -111860234
+      e1_1: 657044150
+      btn_yes2 #1091: 188041807
+      item_1: -638943735
       btn_continue1 #1095: -1825082030
       item_0: 395365241
-      btn_yes2 #1091: 188041807
-      btn_flipcontroller3: -784422523
-      e4_3: -111860234
-      item_1: -638943735
-      e1_0: 69916653
-      e1_1: 657044150
-      e8_2: -1186185104
-      e1_5: -815191674
-      e7_7: -2064336002
-      e6_3: 1105572865
-      Progress will be lost.: -47239999
+      no1_2: 1147083777
       btn_hoystick1: -1625040777
+      e3_0: -1604883784
+      e1_0: 69916653
+      e7_7: -2064336002
       btn_back2: -1096442369
-      e2_3: 1246921252
+      nhanvat1_18: 1963301586
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

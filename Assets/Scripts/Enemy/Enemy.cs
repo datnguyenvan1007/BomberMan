@@ -112,7 +112,7 @@ public class Enemy : MonoBehaviour
 
     protected void SetAnimationOfMovement(Vector2 dir)
     {
-        if (dir == direction || dir == Vector2.zero)
+        if (dir == Vector2.zero)
             return;
         anim.SetFloat(MoveHash, dir.x + dir.y);
     }

@@ -4,14 +4,11 @@ using UnityEngine;
 
 public class AudioManager : MonoBehaviour
 {
-    [SerializeField] private AudioClip titleScreen;
     [SerializeField] private AudioClip levelStart;
     [SerializeField] private AudioClip inGame;
     [SerializeField] private AudioClip findTheExit;
     [SerializeField] private AudioClip levelComplete;
-    // [SerializeField] private AudioClip bonusStage;
     [SerializeField] private AudioClip boom;
-    // [SerializeField] private AudioClip dying;
     [SerializeField] private AudioClip justDied;
     [SerializeField] private AudioClip leftRight;
     [SerializeField] private AudioClip putBomb;
@@ -60,16 +57,12 @@ public class AudioManager : MonoBehaviour
     }
     public void PlayAudioInGame()
     {
-        audioSource.clip = inGame;
+        // audioSource.clip = inGame;
         audioSource.Play();
     }
     public void Stop()
     {
         audioSource.Stop();
-    }
-    public void Pause()
-    {
-        audioSource.Pause();
     }
     public void Mute()
     {

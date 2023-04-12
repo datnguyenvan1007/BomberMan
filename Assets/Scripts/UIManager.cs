@@ -103,9 +103,9 @@ public class UIManager : MonoBehaviour
         GameData.score += s;
         score.text = GameData.score.ToString();
     }
-    public void SetTimeGame(float t)
+    public void SetTimeGame(int t)
     {
-        time.text = ((int)t).ToString();
+        time.text = t.ToString();
     }
     public void SetValueStageAndLeft(int stageValue, int leftValue)
     {

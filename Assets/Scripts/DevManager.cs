@@ -39,13 +39,13 @@ public class DevManager : MonoBehaviour
         if (!GameData.hackBombPass) {
             GameData.hackBombPass = true;
             bombPassText.text = "On";
-            BombSpawner.instance.SetTriggerForBomb(true);
+            PoolBomb.instance.SetTriggerForBomb(true);
         }
         else {
             GameData.hackBombPass = false;
             bombPassText.text = "Off";
             if (GameData.bombPass == 0) {
-                BombSpawner.instance.SetTriggerForBomb(false);
+                PoolBomb.instance.SetTriggerForBomb(false);
             }
         }
     }
@@ -53,13 +53,13 @@ public class DevManager : MonoBehaviour
         if (!GameData.hackWallPass) {
             GameData.hackWallPass = true;
             wallPassText.text = "On";
-            GameManager.instance.SetTriggerAllBricks(true);
+            PoolBrick.instance.SetTriggerAllBricks(true);
         }
         else {
             GameData.hackWallPass = false;
             wallPassText.text = "Off";
             if (GameData.wallPass == 0) {
-                GameManager.instance.SetTriggerAllBricks(false);
+                PoolBrick.instance.SetTriggerAllBricks(false);
             }
         }
     }
@@ -74,7 +74,7 @@ public class DevManager : MonoBehaviour
         }
     }
     public void HackBomb() {
-        BombSpawner.instance.AddBomb();
+        PoolBomb.instance.AddBomb();
         GameData.hackBomb = true;
     }
     public void HackFlame() {

@@ -26,9 +26,9 @@ public class Bomb : MonoBehaviour
     public void Explode()
     {
         isExploded = true;
-        BombSpawner.instance.Despawn(gameObject);
+        PoolBomb.instance.Despawn(gameObject);
         AudioManager.instance.PlayAudioBoom();
-        ExplosionSpawner.instance.Explode(transform);
+        PoolExplosion.instance.Explode(transform);
         collider.isTrigger = true;
     }
     private void OnTriggerExit2D(Collider2D collision)

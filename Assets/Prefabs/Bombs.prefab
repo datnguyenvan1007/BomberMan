@@ -124,4 +124,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f201b5611a913e84ba8354bf5913829a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemy: {fileID: 2272818584612048178, guid: 4b90a7909a3a3de4dae35edddb8bd231, type: 3}
+  enemysPrefab:
+  - {fileID: 6219509067505225329, guid: d72b06623427bae47b054ae69bb6615a, type: 3}
+  - {fileID: 2272818584612048178, guid: 4b90a7909a3a3de4dae35edddb8bd231, type: 3}
+  - {fileID: 2272818584612048178, guid: 4b90a7909a3a3de4dae35edddb8bd231, type: 3}
+  - {fileID: 2272818584612048178, guid: 4b90a7909a3a3de4dae35edddb8bd231, type: 3}
+  - {fileID: 4618554531479202516, guid: 9966af4fab19dce468883a5ea1f289ee, type: 3}
+  - {fileID: 155105565451162079, guid: 1ab3f88bca0e4cd41ab02e69883b0172, type: 3}
+  - {fileID: 4750946573573921248, guid: c37f7642d9c74ae409f2d29fb952a120, type: 3}
+  - {fileID: 6219509067505225329, guid: d72b06623427bae47b054ae69bb6615a, type: 3}
+  - {fileID: 4618554531479202516, guid: 9966af4fab19dce468883a5ea1f289ee, type: 3}

@@ -30,42 +30,57 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject timeOut;
     [SerializeField] private GameObject player;
     [SerializeField] private GameObject exitWay;
-    [SerializeField] private List<GameObject> mapsPrefab;
     [SerializeField] private List<GameObject> enemiesAndItemPrefab;
-    private GameObject mapOfCurrentLevel;
     private GameObject enemiesAndItemOfCurrentLevel;
     private GameObject brickOverExitGate;
     private GameObject item;
     private GameObject brickOverItem;
+    private List<Vector2> playerSafePositions;
     private List<Vector2> listOfBrickPositions;
-    private List<Vector2> listOfPositions;
-    private List<Vector2> listOfPositionsCanFillEnemy;
+    private List<Vector2> listOfPositionsCanFillBrick;
+    private List<Vector2> listOfPositionsCanFill;
     private bool isPlayingLevel = false;
     private bool isActivedExitGate = false;
     private bool isActiveItem = false;
+    private int time = 200;
     private float timeRemain;
+    private int totalBrick = 56;
     public static GameManager instance;
     private void Awake()
     {
         Application.targetFrameRate = 60;
         GameManager.instance = this;
         listOfBrickPositions = new List<Vector2>();
-        listOfPositions = new List<Vector2>();
-        for (int i = -4; i <= 6; i++)
+        playerSafePositions = new List<Vector2>();
+        listOfPositionsCanFillBrick = new List<Vector2>();
+        listOfPositionsCanFill = new List<Vector2>();
+        for (int i = 6; i >= -4; i--)
         {
             for (int j = -12; j <= 22; j++)
             {
-                if (i >= 2 && j <= -6)
-                    continue;
                 if (i % 2 == 0)
-                    listOfPositions.Add(new Vector2(j, i));
+                {
+                    listOfPositionsCanFillBrick.Add(new Vector2(j, i));
+                }
                 else
                 {
                     if (j % 2 == 0)
-                       listOfPositions.Add(new Vector2(j, i));
+                    {
+                        listOfPositionsCanFillBrick.Add(new Vector2(j, i));
+                    }
                 }
             }
         }
+        for (int i = -12; i <= -5; i++)
+        {
+            for (int j = 6; j >= 2; j--)
+            {
+                playerSafePositions.Add(new Vector2(i, j));
+            }
+        }
+        listOfPositionsCanFillBrick.Remove(player.transform.position);
+        listOfPositionsCanFillBrick.Remove(player.transform.position + Vector3.right);
+        listOfPositionsCanFillBrick.Remove(player.transform.position + Vector3.down);
     }
 
     void Start()
@@ -73,11 +88,11 @@ public class GameManager : MonoBehaviour
         GetValueForGameData();
         GameData.hackBomb = false;
         for (int i = 1; i <= GameData.numberOfBombs; i++)
-            BombSpawner.instance.AddBomb();
+            PoolBomb.instance.AddBomb();
         UIManager.instance.SetControllerOpacity(PlayerPrefs.GetFloat("ControllerOpacity", 45) / 100);
         UIManager.instance.SetAcitveControllerType(PlayerPrefs.GetInt("ControllerType", 2));
         UIManager.instance.SetActiveButtonDetonator(GameData.detonator);
-        UIManager.instance.SetTimeGame(timeRemain);
+        UIManager.instance.SetTimeGame(time);
         UIManager.instance.SetGameScore(0);
         StartCoroutine(LoadLevel());
     }
@@ -91,10 +106,11 @@ public class GameManager : MonoBehaviour
     {
         GameData.speed = PlayerPrefs.GetFloat("Speed", 3.5f);
         GameData.numberOfBombs = PlayerPrefs.GetInt("NumberOfBombs", 1);
-        if (!GameData.hackBomb && GameData.numberOfBombs < BombSpawner.instance.Count()) {
-            BombSpawner.instance.RemoveLastBomb();
+        if (!GameData.hackBomb && GameData.numberOfBombs < PoolBomb.instance.Count())
+        {
+            PoolBomb.instance.RemoveLastBomb();
         }
-        if (GameData.hackFlame == GameData.flame) 
+        if (GameData.hackFlame == GameData.flame)
             GameData.hackFlame = PlayerPrefs.GetInt("Flame", 1);
         GameData.flame = PlayerPrefs.GetInt("Flame", 1);
         GameData.score = PlayerPrefs.GetInt("Score", 0);
@@ -143,7 +159,7 @@ public class GameManager : MonoBehaviour
 
         UIManager.instance.SetValueStageAndLeft(PlayerPrefs.GetInt("Stage", 1), PlayerPrefs.GetInt("Left", 2));
         UIManager.instance.SetActiveStartingScene(true);
-        BombSpawner.instance.ExplodeAllBombs();
+        PoolBomb.instance.ExplodeAllBombs();
 
         AudioManager.instance.PlayAudioLevelStart();
 
@@ -156,45 +172,61 @@ public class GameManager : MonoBehaviour
 
         isPlayingLevel = true;
         timeRemain = 200;
+        time = 200;
     }
     void InitMap()
     {
         int index;
-        index = UnityEngine.Random.Range(0, mapsPrefab.Count);
-        listOfBrickPositions.Clear();
-        mapOfCurrentLevel = Instantiate(mapsPrefab[index], levelObject.transform);
-        foreach (Transform brick in mapOfCurrentLevel.transform)
-        {
-            listOfBrickPositions.Add(brick.position);
-        }
+        ArrangeBricks();
+        ArrangeExitGate(out index);
         enemiesAndItemOfCurrentLevel = Instantiate(enemiesAndItemPrefab[PlayerPrefs.GetInt("Stage", 1) - 1], levelObject.transform);
-        ArrangeEnemies();
-        ArrangeExitGate(ref index);
         ArrangeItem(index);
+        ArrangeEnemies();
+    }
+    void ArrangeBricks()
+    {
+        int index;
+        int count = listOfPositionsCanFillBrick.Count;
+        listOfPositionsCanFill.Clear();
+        listOfPositionsCanFill.AddRange(listOfPositionsCanFillBrick);
+        totalBrick += ((int)(PlayerPrefs.GetInt("Stage", 1) / 5)) * 2;
+        listOfBrickPositions.Clear();
+        for (int i = 1; i <= totalBrick; i++)
+        {
+            index = UnityEngine.Random.Range(0, count);
+            PoolBrick.instance.Spawn(listOfPositionsCanFill[index]);
+            listOfBrickPositions.Add(listOfPositionsCanFill[index]);
+            listOfPositionsCanFill.RemoveAt(index);
+            count--;
+        }
     }
     void ArrangeEnemies()
     {
         Transform enemies = enemiesAndItemOfCurrentLevel.transform.GetChild(0);
-        listOfPositionsCanFillEnemy = listOfPositions.Except(listOfBrickPositions).ToList();
+        for (int i = 0; i < playerSafePositions.Count; i++) {
+            listOfPositionsCanFill.Remove(playerSafePositions[i]);
+        }
         foreach (Transform enemy in enemies)
         {
             int index = GetIndexPositionOfEnemy();
-            enemy.position = listOfPositionsCanFillEnemy[index];
-            try {
-                listOfPositionsCanFillEnemy.RemoveRange(index - 4, index + 4);
+            enemy.position = listOfPositionsCanFill[index];
+            try
+            {
+                listOfPositionsCanFill.RemoveRange(index - 5, index + 5);
             }
             catch (Exception)
             {
-                listOfPositionsCanFillEnemy.RemoveAt(index);
+                listOfPositionsCanFill.RemoveAt(index);
             }
         }
     }
     int GetIndexPositionOfEnemy()
     {
-        return UnityEngine.Random.Range(0, listOfPositionsCanFillEnemy.Count);
+        return UnityEngine.Random.Range(0, listOfPositionsCanFill.Count);
     }
-    void ArrangeExitGate(ref int index)
+    void ArrangeExitGate(out int index)
     {
+        exitWay.GetComponent<Items>().Hide();
         index = UnityEngine.Random.Range(0, listOfBrickPositions.Count);
         exitWay.transform.position = listOfBrickPositions[index];
         RaycastHit2D hit = Physics2D.Raycast(exitWay.transform.position, Vector3.forward, 0.5f, LayerMask.GetMask("Brick"));
@@ -227,7 +259,11 @@ public class GameManager : MonoBehaviour
             return;
         }
         timeRemain -= Time.fixedDeltaTime;
-        UIManager.instance.SetTimeGame(timeRemain);
+        if (timeRemain < time)
+        {
+            time--;
+            UIManager.instance.SetTimeGame(time);
+        }
     }
     private void TimeOut(bool isActive)
     {
@@ -245,7 +281,7 @@ public class GameManager : MonoBehaviour
         SaveData();
         PlayerPrefs.SetInt("Left", PlayerPrefs.GetInt("Left", 2) + 1);
         PlayerPrefs.SetInt("Stage", PlayerPrefs.GetInt("Stage", 1) + 1);
-        Destroy(mapOfCurrentLevel);
+        PoolBrick.instance.DespawnAll();
         Destroy(enemiesAndItemOfCurrentLevel);
         player.SetActive(false);
         StartCoroutine(LoadLevel());
@@ -254,7 +290,7 @@ public class GameManager : MonoBehaviour
     {
         StartCoroutine(GoToPreviousLevel());
     }
-    private IEnumerator GoToPreviousLevel() 
+    private IEnumerator GoToPreviousLevel()
     {
         yield return new WaitForSeconds(2f);
         SaveDataWhenLosing();
@@ -262,7 +298,7 @@ public class GameManager : MonoBehaviour
         if (PlayerPrefs.GetInt("Left", 2) > 0)
         {
             PlayerPrefs.SetInt("Left", PlayerPrefs.GetInt("Left", 2) - 1);
-            Destroy(mapOfCurrentLevel);
+            PoolBrick.instance.DespawnAll();
             Destroy(enemiesAndItemOfCurrentLevel);
             GetValueForGameData();
             UIManager.instance.SetGameScore(0);
@@ -292,12 +328,5 @@ public class GameManager : MonoBehaviour
     void RedirectHome()
     {
         SceneManager.LoadScene(0);
-    }
-    public void SetTriggerAllBricks(bool isTrigger)
-    {
-        foreach (Transform brick in mapOfCurrentLevel.transform)
-        {
-            brick.GetComponent<Brick>().SetTrigger(isTrigger);
-        }
     }
 }
