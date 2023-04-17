@@ -32,8 +32,11 @@ public class Player : MonoBehaviour
     }
     void FixedUpdate()
     {
-        moveDPad.x = Input.GetAxisRaw("Horizontal");
-        moveDPad.y = Input.GetAxisRaw("Vertical");
+        // moveDPad.x = Input.GetAxisRaw("Horizontal");
+        // moveDPad.y = Input.GetAxisRaw("Vertical");
+        // if (moveDPad.x != 0 && moveDPad.y != 0) {
+        //     moveDPad = Vector2.zero;
+        // }
         Move();
     }
     private void Move()

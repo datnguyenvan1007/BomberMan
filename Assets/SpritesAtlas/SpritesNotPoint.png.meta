@@ -117,10 +117,31 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: AllAxis_Outline
+      name: Title
       rect:
         serializedVersion: 2
         x: 0
+        y: 0
+        width: 873
+        height: 462
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7af6e344000000000800000000000000
+      internalID: 1144942503
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AllAxis_Outline
+      rect:
+        serializedVersion: 2
+        x: 874
         y: 0
         width: 512
         height: 512
@@ -142,7 +163,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 513
+        y: 463
         width: 865
         height: 218
       alignment: 9
@@ -163,7 +184,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 732
+        y: 682
         width: 2048
         height: 50
       alignment: 9
@@ -183,7 +204,7 @@ TextureImporter:
       name: dpad
       rect:
         serializedVersion: 2
-        x: 513
+        x: 1387
         y: 0
         width: 272
         height: 272
@@ -204,7 +225,7 @@ TextureImporter:
       name: Handle_Plain
       rect:
         serializedVersion: 2
-        x: 786
+        x: 1660
         y: 0
         width: 257
         height: 256
@@ -225,8 +246,8 @@ TextureImporter:
       name: logo_bombman
       rect:
         serializedVersion: 2
-        x: 786
-        y: 257
+        x: 866
+        y: 513
         width: 433
         height: 109
       alignment: 9
@@ -246,8 +267,8 @@ TextureImporter:
       name: shot_button_1
       rect:
         serializedVersion: 2
-        x: 513
-        y: 273
+        x: 1660
+        y: 257
         width: 175
         height: 179
       alignment: 9
@@ -267,8 +288,8 @@ TextureImporter:
       name: jump_arrow_1
       rect:
         serializedVersion: 2
-        x: 1044
-        y: 0
+        x: 1836
+        y: 257
         width: 175
         height: 179
       alignment: 9
@@ -288,8 +309,8 @@ TextureImporter:
       name: shot_button_0
       rect:
         serializedVersion: 2
-        x: 689
-        y: 367
+        x: 1387
+        y: 273
         width: 134
         height: 134
       alignment: 9
@@ -309,8 +330,8 @@ TextureImporter:
       name: jump_arrow_0
       rect:
         serializedVersion: 2
-        x: 824
-        y: 367
+        x: 1522
+        y: 273
         width: 134
         height: 134
       alignment: 9
@@ -330,8 +351,8 @@ TextureImporter:
       name: thanh_keo1
       rect:
         serializedVersion: 2
-        x: 1044
-        y: 180
+        x: 866
+        y: 623
         width: 327
         height: 35
       alignment: 9
@@ -351,8 +372,8 @@ TextureImporter:
       name: thanh_keo2
       rect:
         serializedVersion: 2
-        x: 513
-        y: 453
+        x: 1194
+        y: 623
         width: 155
         height: 35
       alignment: 9
@@ -372,8 +393,8 @@ TextureImporter:
       name: left
       rect:
         serializedVersion: 2
-        x: 1044
-        y: 216
+        x: 1918
+        y: 0
         width: 128
         height: 33
       alignment: 9
@@ -390,32 +411,11 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: gachvo1
-      rect:
-        serializedVersion: 2
-        x: 689
-        y: 273
-        width: 48
-        height: 48
-      alignment: 9
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 817837afffffffff0800000000000000
-      internalID: -93092072
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
       name: gach
       rect:
         serializedVersion: 2
-        x: 1220
-        y: 0
+        x: 1918
+        y: 34
         width: 48
         height: 48
       alignment: 9
@@ -432,11 +432,32 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
+      name: gachvo1
+      rect:
+        serializedVersion: 2
+        x: 1967
+        y: 34
+        width: 48
+        height: 48
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 817837afffffffff0800000000000000
+      internalID: -93092072
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
       name: gachvo2
       rect:
         serializedVersion: 2
-        x: 1220
-        y: 49
+        x: 1918
+        y: 83
         width: 48
         height: 45
       alignment: 9
@@ -456,8 +477,8 @@ TextureImporter:
       name: gachvo3
       rect:
         serializedVersion: 2
-        x: 689
-        y: 322
+        x: 1967
+        y: 83
         width: 48
         height: 42
       alignment: 9
@@ -477,8 +498,8 @@ TextureImporter:
       name: gachvo4
       rect:
         serializedVersion: 2
-        x: 1173
-        y: 216
+        x: 1967
+        y: 126
         width: 48
         height: 39
       alignment: 9
@@ -498,8 +519,8 @@ TextureImporter:
       name: gachvo5
       rect:
         serializedVersion: 2
-        x: 1220
-        y: 95
+        x: 1918
+        y: 129
         width: 48
         height: 36
       alignment: 9
@@ -519,8 +540,8 @@ TextureImporter:
       name: gachvo6
       rect:
         serializedVersion: 2
-        x: 1220
-        y: 132
+        x: 1918
+        y: 166
         width: 48
         height: 33
       alignment: 9
@@ -540,8 +561,8 @@ TextureImporter:
       name: btn_pause
       rect:
         serializedVersion: 2
-        x: 738
-        y: 273
+        x: 1967
+        y: 166
         width: 25
         height: 31
       alignment: 9
@@ -561,8 +582,8 @@ TextureImporter:
       name: e6_8
       rect:
         serializedVersion: 2
-        x: 513
-        y: 489
+        x: 1967
+        y: 198
         width: 48
         height: 15
       alignment: 9
@@ -582,8 +603,8 @@ TextureImporter:
       name: e5_9
       rect:
         serializedVersion: 2
-        x: 738
-        y: 305
+        x: 1993
+        y: 166
         width: 45
         height: 15
       alignment: 9
@@ -603,8 +624,8 @@ TextureImporter:
       name: e3_8
       rect:
         serializedVersion: 2
-        x: 738
-        y: 321
+        x: 1993
+        y: 182
         width: 45
         height: 15
       alignment: 9
@@ -624,8 +645,8 @@ TextureImporter:
       name: e2_8
       rect:
         serializedVersion: 2
-        x: 738
-        y: 337
+        x: 1918
+        y: 200
         width: 42
         height: 15
       alignment: 9
@@ -645,8 +666,8 @@ TextureImporter:
       name: e4_8
       rect:
         serializedVersion: 2
-        x: 562
-        y: 489
+        x: 1961
+        y: 214
         width: 36
         height: 15
       alignment: 9
@@ -666,8 +687,8 @@ TextureImporter:
       name: e1_8
       rect:
         serializedVersion: 2
-        x: 599
-        y: 489
+        x: 1918
+        y: 216
         width: 36
         height: 15
       alignment: 9
@@ -687,8 +708,8 @@ TextureImporter:
       name: e7_8
       rect:
         serializedVersion: 2
-        x: 636
-        y: 489
+        x: 1998
+        y: 214
         width: 33
         height: 15
       alignment: 9
@@ -708,8 +729,8 @@ TextureImporter:
       name: e8_8
       rect:
         serializedVersion: 2
-        x: 1269
-        y: 0
+        x: 2016
+        y: 198
         width: 30
         height: 15
       alignment: 9
@@ -761,6 +782,7 @@ TextureImporter:
       shot_button_1: -966581232
       logo_bombman: -2107705842
       gachvo2: 1361489591
+      Title: 1144942503
       jump_arrow_1: -29646514
       thanh_keo1: -1891580615
       khung: 1296840894

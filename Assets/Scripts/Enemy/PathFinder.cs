@@ -6,8 +6,8 @@ using UnityEngine;
 public class PathFinder : MonoBehaviour
 {
     static List<Vector2> pathToTarget;
-    static List<Node> checkedNodes;
-    static List<Node> waitingNodes;
+    static List<Node> close;
+    static List<Node> open;
     static Node nodeToCheck;
 
     // public static List<Vector2> GetPath(Vector2 start, Vector2 target, bool isThroughBrick)
@@ -71,8 +71,8 @@ public class PathFinder : MonoBehaviour
     public static List<Vector2> GetPath(Vector2 start, Vector2 target, bool isThroughBrick)
     {
         pathToTarget = new List<Vector2>();
-        checkedNodes = new List<Node>();
-        waitingNodes = new List<Node>();
+        close = new List<Node>();
+        open = new List<Node>();
 
         Vector2 startPosition = new Vector2(Mathf.Round(start.x), Mathf.Round(start.y));
         Vector2 targetPosition = new Vector2(Mathf.Round(target.x), Mathf.Round(target.y));
@@ -87,12 +87,12 @@ public class PathFinder : MonoBehaviour
         }
 
         Node startNode = new Node(0, startPosition, targetPosition, null);
-        checkedNodes.Add(startNode);
-        waitingNodes.AddRange(GetNeighbourNodes(startNode));
+        close.Add(startNode);
+        open.AddRange(GetNeighbourNodes(startNode));
 
-        while (waitingNodes.Count > 0)
+        while (open.Count > 0)
         {
-            nodeToCheck = waitingNodes.Where(x => x.F == waitingNodes.Min(y => y.F)).FirstOrDefault();
+            nodeToCheck = open.Where(x => x.F == open.Min(y => y.F)).FirstOrDefault();
             if (nodeToCheck.Position == targetPosition)
             {
                 return CalculatePathFromNode(nodeToCheck, target);
@@ -110,16 +110,16 @@ public class PathFinder : MonoBehaviour
             }
             if (!walkable)
             {
-                waitingNodes.Remove(nodeToCheck);
-                checkedNodes.Add(nodeToCheck);
+                open.Remove(nodeToCheck);
+                close.Add(nodeToCheck);
             }
             else
             {
-                waitingNodes.Remove(nodeToCheck);
-                if (!checkedNodes.Where(x => x.Position == nodeToCheck.Position).Any())
+                open.Remove(nodeToCheck);
+                if (!close.Where(x => x.Position == nodeToCheck.Position).Any())
                 {
-                    checkedNodes.Add(nodeToCheck);
-                    waitingNodes.AddRange(GetNeighbourNodes(nodeToCheck));
+                    close.Add(nodeToCheck);
+                    open.AddRange(GetNeighbourNodes(nodeToCheck));
                 }
             }
         }

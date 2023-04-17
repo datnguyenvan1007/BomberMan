@@ -139,6 +139,9 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.SetInt("WallPass", GameData.wallPass);
         PlayerPrefs.SetInt("FlamePass", GameData.flamePass);
         PlayerPrefs.SetInt("BombPass", GameData.bombPass);
+        if (PlayerPrefs.GetInt("Left", 2) > 0) {
+            PlayerPrefs.SetInt("Left", PlayerPrefs.GetInt("Left", 2) - 1);
+        }
     }
 
     IEnumerator LoadLevel()
@@ -189,7 +192,7 @@ public class GameManager : MonoBehaviour
         int count = listOfPositionsCanFillBrick.Count;
         listOfPositionsCanFill.Clear();
         listOfPositionsCanFill.AddRange(listOfPositionsCanFillBrick);
-        totalBrick += ((int)(PlayerPrefs.GetInt("Stage", 1) / 5)) * 2;
+        totalBrick += ((int)(PlayerPrefs.GetInt("Stage", 1) / 5));
         listOfBrickPositions.Clear();
         for (int i = 1; i <= totalBrick; i++)
         {
@@ -248,9 +251,10 @@ public class GameManager : MonoBehaviour
     {
         if (!isPlayingLevel)
             return;
-        if (timeRemain <= 0)
+        if (time == 0)
             return;
-        if (timeRemain <= 0.1f && !timeOut.activeSelf)
+        timeRemain -= Time.fixedDeltaTime;
+        if (timeRemain < 1f && !timeOut.activeSelf)
         {
             if (Player.isCompleted)
                 return;
@@ -258,7 +262,6 @@ public class GameManager : MonoBehaviour
             PoolEnemy.instance.enemyAlive += 7;
             return;
         }
-        timeRemain -= Time.fixedDeltaTime;
         if (timeRemain < time)
         {
             time--;
@@ -292,12 +295,11 @@ public class GameManager : MonoBehaviour
     }
     private IEnumerator GoToPreviousLevel()
     {
-        yield return new WaitForSeconds(2f);
         SaveDataWhenLosing();
+        yield return new WaitForSeconds(2f);
         isPlayingLevel = false;
         if (PlayerPrefs.GetInt("Left", 2) > 0)
         {
-            PlayerPrefs.SetInt("Left", PlayerPrefs.GetInt("Left", 2) - 1);
             PoolBrick.instance.DespawnAll();
             Destroy(enemiesAndItemOfCurrentLevel);
             GetValueForGameData();
